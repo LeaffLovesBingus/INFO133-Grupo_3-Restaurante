@@ -1,35 +1,34 @@
 CREATE TABLE "Hechos_Ventas" (
-  "PK_ID_Venta" integer,
+  "Id_Venta" integer,
   "Cantidad_Productos" integer,
   "Monto_Total" integer,
   "Fecha_Venta" timestamp,
-  "FK_Id_Mesero" integer UNIQUE NOT NULL,
-  "FK_Id_Mesa" integer,
-  "Medio_Pago" integer UNIQUE NOT NULL,
-  PRIMARY KEY ("PK_ID_Venta", "FK_Id_Mesa"),
-  UNIQUE ("PK_ID_Venta")
+  "FK_Id_Mesero" integer NOT NULL,
+  "Id_Mesa" integer,
+  "FK_Id_Medio_Pago" integer NOT NULL,
+  PRIMARY KEY ("Id_Venta")
 );
 
 CREATE TABLE "Medio_Pago" (
-  "PK_ID_Medio_Pago" integer PRIMARY KEY,
+  "Id_Medio_Pago" integer PRIMARY KEY,
   "Medio_Pago" varchar
 );
 
 CREATE TABLE "Consumibles_Vendidos" (
-  "FK_ID_Venta" integer UNIQUE NOT NULL,
-  "FK_ID_Consumible" integer UNIQUE NOT NULL,
+  "FK_Id_Venta" integer NOT NULL,
+  "FK_Id_Consumible" integer NOT NULL,
   "Cantidad" integer
 );
 
 CREATE TABLE "Consumibles" (
-  "PK_id_consumibles" integer PRIMARY KEY,
+  "Id_consumibles" integer PRIMARY KEY,
   "Nombre" varchar,
   "Precio_unidad" integer,
   "Categoria" varchar
 );
 
 CREATE TABLE "Cocinero" (
-  "FK_id_cocinero" integer PRIMARY KEY,
+  "Id_cocinero" integer PRIMARY KEY,
   "Nombre" varchar,
   "Apellido" varchar,
   "Correo" varchar,
@@ -37,7 +36,7 @@ CREATE TABLE "Cocinero" (
 );
 
 CREATE TABLE "Mesero" (
-  "FK_id_mesero" integer PRIMARY KEY,
+  "Id_mesero" integer PRIMARY KEY,
   "Nombre" varchar,
   "Apellido" varchar,
   "Correo" varchar,
@@ -45,31 +44,46 @@ CREATE TABLE "Mesero" (
 );
 
 CREATE TABLE "Ingredientes" (
-  "PK_id_ingrediente" integer PRIMARY KEY,
+  "Id_ingrediente" integer PRIMARY KEY,
   "Nombre" varchar,
   "Tipo" varchar,
   "Cantidad" integer
 );
 
 CREATE TABLE "Hechos_Ingredientes_Usados" (
-  "PK_Id_Ingredientes_Usados" integer PRIMARY KEY,
-  "FK_id_consumible" integer UNIQUE NOT NULL,
-  "FK_id_ingrediente" integer UNIQUE NOT NULL,
+  "Id_Ingredientes_Usados" integer PRIMARY KEY,
+  "FK_Id_consumible" integer NOT NULL,
+  "FK_Id_ingrediente" integer NOT NULL,
   "Cantidad" integer,
   "Fecha_uso" timestamp,
-  "FK_id_cocinero" integer UNIQUE NOT NULL
+  "FK_Id_cocinero" integer NOT NULL
 );
 
-ALTER TABLE "Hechos_Ventas" ADD FOREIGN KEY ("FK_Id_Mesero") REFERENCES "Mesero" ("FK_id_mesero");
 
-ALTER TABLE "Hechos_Ventas" ADD FOREIGN KEY ("Medio_Pago") REFERENCES "Medio_Pago" ("PK_ID_Medio_Pago");
+ALTER TABLE "Hechos_Ventas" ALTER COLUMN "Id_Venta" ADD GENERATED ALWAYS AS IDENTITY;
 
-ALTER TABLE "Consumibles_Vendidos" ADD FOREIGN KEY ("FK_ID_Venta") REFERENCES "Hechos_Ventas" ("PK_ID_Venta");
+ALTER TABLE "Medio_Pago" ALTER COLUMN "Id_Medio_Pago" ADD GENERATED ALWAYS AS IDENTITY;
 
-ALTER TABLE "Consumibles_Vendidos" ADD FOREIGN KEY ("FK_ID_Consumible") REFERENCES "Consumibles" ("PK_id_consumibles");
+ALTER TABLE "Consumibles" ALTER COLUMN "Id_consumibles" ADD GENERATED ALWAYS AS IDENTITY;
 
-ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_id_consumible") REFERENCES "Consumibles" ("PK_id_consumibles");
+ALTER TABLE "Cocinero" ALTER COLUMN "Id_cocinero" ADD GENERATED ALWAYS AS IDENTITY;
 
-ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_id_ingrediente") REFERENCES "Ingredientes" ("PK_id_ingrediente");
+ALTER TABLE "Mesero" ALTER COLUMN "Id_mesero" ADD GENERATED ALWAYS AS IDENTITY;
 
-ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_id_cocinero") REFERENCES "Cocinero" ("FK_id_cocinero");
+ALTER TABLE "Ingredientes" ALTER COLUMN "Id_ingrediente" ADD GENERATED ALWAYS AS IDENTITY;
+
+ALTER TABLE "Hechos_Ingredientes_Usados" ALTER COLUMN "Id_Ingredientes_Usados" ADD GENERATED ALWAYS AS IDENTITY;
+
+ALTER TABLE "Hechos_Ventas" ADD FOREIGN KEY ("FK_Id_Mesero") REFERENCES "Mesero" ("Id_mesero");
+
+ALTER TABLE "Hechos_Ventas" ADD FOREIGN KEY ("FK_Id_Medio_Pago") REFERENCES "Medio_Pago" ("Id_Medio_Pago");
+
+ALTER TABLE "Consumibles_Vendidos" ADD FOREIGN KEY ("FK_Id_Venta") REFERENCES "Hechos_Ventas" ("Id_Venta");
+
+ALTER TABLE "Consumibles_Vendidos" ADD FOREIGN KEY ("FK_Id_Consumible") REFERENCES "Consumibles" ("Id_consumibles");
+
+ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_Id_consumible") REFERENCES "Consumibles" ("Id_consumibles");
+
+ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_Id_ingrediente") REFERENCES "Ingredientes" ("Id_ingrediente");
+
+ALTER TABLE "Hechos_Ingredientes_Usados" ADD FOREIGN KEY ("FK_Id_cocinero") REFERENCES "Cocinero" ("Id_cocinero");
