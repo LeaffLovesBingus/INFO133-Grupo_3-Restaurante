@@ -1,4 +1,5 @@
 import psycopg2
+from sqlalchemy import create_engine
 import pandas as pd
 import matplotlib.pyplot as plt
 
@@ -25,7 +26,8 @@ def graficar_ventas_por_mes():
         """
         
         # Leer los datos en un DataFrame de pandas
-        df = pd.read_sql_query(query, conn)
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+        df = pd.read_sql_query(query, engine)
         
         # Graficar los datos
         plt.figure(figsize=(10, 6))
@@ -36,8 +38,9 @@ def graficar_ventas_por_mes():
         plt.xticks(df['mes'])
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         
-        # Mostrar el gráfico
-        plt.show()
+        # Guardar el gráfico
+        plt.savefig('grafico1.png')
+        plt.close()
         
     except Exception as e:
         print(f"# Error al graficar ventas por mes\nDetalle -> {e}")
@@ -64,26 +67,29 @@ def graficar_ventas_por_año(año:int):
         
         # Consulta SQL para obtener las ventas por año
         query = f"""
-        SELECT EXTRACT(YEAR FROM "Fecha_Venta") AS año, SUM("Monto_Total") AS total_ventas
+        SELECT EXTRACT(MONTH FROM "Fecha_Venta") AS mes, SUM("Monto_Total") AS total_ventas
         FROM "Hechos_Ventas"
         WHERE EXTRACT(YEAR FROM "Fecha_Venta") = {año}
-        GROUP BY año;
+        GROUP BY mes
+        ORDER BY mes;
         """
         
         # Leer los datos en un DataFrame de pandas
-        df = pd.read_sql_query(query, conn)
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+        df = pd.read_sql_query(query, engine)
         
         # Graficar los datos
         plt.figure(figsize=(10, 6))
-        plt.bar(df['año'], df['total_ventas'], color='skyblue')
-        plt.title(f'Ventas por Año: {año}')
-        plt.xlabel('Año')
+        plt.bar(df['mes'], df['total_ventas'], color='skyblue')
+        plt.title(f'Análisis meses ventas en el año {año}')
+        plt.xlabel('Mes')
         plt.ylabel('Total Ventas')
-        plt.xticks(df['año'])
+        plt.xticks(df['mes'])
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         
-        # Mostrar el gráfico
-        plt.show()
+        # Guardar el gráfico
+        plt.savefig(f'grafico_ventas_{año}_por_mes.png')
+        plt.close()
         
     except Exception as e:
         print(f"# Error al graficar ventas por año\nDetalle -> {e}")
@@ -96,15 +102,5 @@ def graficar_ventas_por_año(año:int):
 
 if __name__ == "__main__":
 
-    try: 
-        conn = psycopg2.connect(
-            database="sistema_restaurante",
-            user="usuario_restaurante",
-            password="1234",
-            host="localhost"
-        )
-        print("> postgres conectado con éxito")
-    except Exception as e:
-        print(f"# Error al conectar a postgres\nDetalle -> {e}")
-        conn.close()
-        exit()
+    graficar_ventas_por_mes()
+    graficar_ventas_por_año(2024)
