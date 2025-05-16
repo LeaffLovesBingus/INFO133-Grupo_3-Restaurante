@@ -70,7 +70,7 @@ def crear_esquema_bd():
     
     if script:
         try:
-            with open("RestaurantDB.sql", 'r', encoding="utf-8") as f:
+            with open("modelo_db/RestaurantDB.sql", 'r', encoding="utf-8") as f:
                 script_modelo = f.read()
             
             for statement in script_modelo.split(';'):
