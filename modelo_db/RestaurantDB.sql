@@ -1,6 +1,7 @@
 CREATE TABLE "Hechos_Ventas" (
   "Id_Venta" integer,
   "Cantidad_Productos" integer,
+  "Cantidad_clientes" integer,
   "Monto_Total" integer,
   "Fecha_Venta" timestamp,
   "FK_Id_Mesero" integer NOT NULL,
