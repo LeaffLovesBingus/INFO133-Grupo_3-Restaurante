@@ -51,7 +51,7 @@ def generarCocineros(n):
 def generarIngredientes(n):
     tipos = {
         'Verdura': ['Tomate', 'Lechuga', 'Palta'],
-        'Carne': ['Hamburguesa', 'Salchicha'],
+        'Carne': ['Hamburguesa', 'Salchicha','Carne de vacuno','Pollo'],
         'Aderezo': ['Mayonesa', 'Mostaza', 'Ketchup'],
         'Misc': ['Puré', 'Arroz'],
         'Lácteo': ['Queso'],
@@ -72,17 +72,27 @@ def generarIngredientes(n):
 
 
 def generarConsumibles(n):
-    categorias = ['Bebida', 'Entrada', 'Plato', 'Postre']
-    nombre_menu = [] #añadir nombres para el menu
+    nombre_menu = {
+        'Hamburguesa doble': (3500, 'Plato'),
+        'Completo italiano': (2500, 'Entrada'),
+        'Puré con carne': (3000, 'Plato'),
+        'Arroz con pollo': (3200, 'Plato'),
+        'Pan con queso': (900, 'Entrada'),
+        'Jugo natural': (1500, 'Bebida'),
+        'Helado': (1200, 'Postre')
+    }
     for _ in range(n):
-        nombre = random.choice(nombre_menu)
-        precio = random.randint(1000, 10000)
-        categoria = random.choice(categorias)
+        nombre = random.choice(list(nombre_menu.keys()))
+        precio, categoria = nombre_menu[nombre]
         cur.execute("""
             INSERT INTO "Consumibles" (Nombre, Precio_unidad, Categoria)
             VALUES (%s, %s, %s)
         """, (nombre, precio, categoria))
     conn.commit()
+
+
+#-------------#
+
 
 if __name__ == "__main__":
 
