@@ -5,9 +5,9 @@ from datetime import datetime, timedelta
 
 conn = psycopg2.connect(
     host="localhost",
-    database="restaurante",
-    user="(usuario del postgres)",
-    password="(la clave)"
+    database="sistema_restaurante",
+    user="usuario_restaurante",
+    password="1234"
 )
 cur = conn.cursor()
 
@@ -52,7 +52,7 @@ def generarMeseros(n):
         correo = fake.email()
         sueldo = random.randint(500000,800000)
         cur.execute("""
-            INSERT INTO "Mesero" (Nombre, Apellido, Correo, Sueldo)
+            INSERT INTO "Mesero" ("Nombre", "Apellido", "Correo", "Sueldo")
             VALUES (%s, %s, %s, %s)
             """, (nombre, apellido, correo, sueldo))
 
@@ -60,7 +60,7 @@ def generarMedioPago():
     medios = ['Efectivo', 'Tarjeta Crédito', 'Tarjeta Débito', 'Transferencia', 'Cheque']
     for medio in medios:
         cur.execute("""
-            INSERT INTO "Medio_Pago" (Medio_Pago)
+            INSERT INTO "Medio_Pago" ("Medio_Pago")
             VALUES (%s)
         """, (medio,))
 
@@ -71,7 +71,7 @@ def generarCocineros(n):
         correo = fake.email()
         sueldo = random.randint(500000, 800000)
         cur.execute("""
-            INSERT INTO "Cocinero" (Nombre, Apellido, Correo, Sueldo)
+            INSERT INTO "Cocinero" ("Nombre", "Apellido", "Correo", "Sueldo")
             VALUES (%s, %s, %s, %s)
         """, (nombre, apellido, correo, sueldo))
 
@@ -90,7 +90,7 @@ def generarIngredientes(n):
         tipo = next((key for key, lista in tipos.items() if nombre in lista), 'Misc')
         cantidad = random.randint(3, 5)
         cur.execute("""
-            INSERT INTO "Ingredientes" (Nombre, Tipo, Cantidad)
+            INSERT INTO "Ingredientes" ("Nombre", "Tipo", "Cantidad")
             VALUES (%s, %s, %s)
         """, (nombre, tipo, cantidad))
 
@@ -108,13 +108,13 @@ def generarConsumibles(n):
         nombre = random.choice(list(nombre_menu.keys()))
         precio, categoria = nombre_menu[nombre]
         cur.execute("""
-            INSERT INTO "Consumibles" (Nombre, Precio_unidad, Categoria)
+            INSERT INTO "Consumibles" ("Nombre", "Precio_unidad", "Categoria")
             VALUES (%s, %s, %s)
         """, (nombre, precio, categoria))
 
 def registrarIngredientesUsados(id_venta, detalles):
     for id_cons, cantidad_vendida in detalles:
-        cur.execute('SELECT Nombre FROM "Consumibles" WHERE Id_consumibles = %s', (id_cons,))
+        cur.execute('SELECT "Nombre" FROM "Consumibles" WHERE "Id_consumibles" = %s', (id_cons,))
         res = cur.fetchone()
         if not res:
             continue
@@ -124,25 +124,25 @@ def registrarIngredientesUsados(id_venta, detalles):
         ingredientes = ingredientes_por_consumible[nombre_consumible]
         for nombre_ingrediente, cant_por_unidad in ingredientes.items():
             cantidad_total = cant_por_unidad * cantidad_vendida
-            cur.execute('SELECT Id_ingrediente FROM "Ingredientes" WHERE Nombre = %s', (nombre_ingrediente,))
+            cur.execute('SELECT "Id_ingrediente" FROM "Ingredientes" WHERE "Nombre" = %s', (nombre_ingrediente,))
             res_ing = cur.fetchone()
             if res_ing is None:
                 continue
             id_ingrediente = res_ing[0]
-            cur.execute('SELECT Id_cocinero FROM "Cocinero" ORDER BY RANDOM() LIMIT 1')
+            cur.execute('SELECT "Id_cocinero" FROM "Cocinero" ORDER BY RANDOM() LIMIT 1')
             id_cocinero = cur.fetchone()[0]
             cur.execute("""
                 INSERT INTO "Hechos_Ingredientes_Usados"
-                (FK_Id_consumible, FK_Id_ingrediente, Cantidad, Fecha_uso, FK_Id_cocinero)
+                ("FK_Id_consumible", "FK_Id_ingrediente", "Cantidad", "Fecha_uso", "FK_Id_cocinero")
                 VALUES (%s, %s, %s, NOW(), %s)
             """, (id_cons, id_ingrediente, cantidad_total, id_cocinero))
 
 def generarVentas(n):
-    cur.execute('SELECT Id_mesero FROM "Mesero"')
+    cur.execute('SELECT "Id_mesero" FROM "Mesero"')
     meseros = [row[0] for row in cur.fetchall()]
-    cur.execute('SELECT Id_Medio_Pago FROM "Medio_Pago"')
+    cur.execute('SELECT "Id_Medio_Pago" FROM "Medio_Pago"')
     medios = [row[0] for row in cur.fetchall()]
-    cur.execute('SELECT Id_consumibles, Precio_unidad FROM "Consumibles"')
+    cur.execute('SELECT "Id_consumibles", "Precio_unidad" FROM "Consumibles"')
     consumibles = cur.fetchall()
     if not meseros or not medios or not consumibles:
         return
@@ -162,14 +162,14 @@ def generarVentas(n):
             detalles.append((id_prod, cantidad))
         cur.execute("""
             INSERT INTO "Hechos_Ventas" 
-            (Cantidad_Productos, Cantidad_clientes, Monto_Total, Fecha_Venta, FK_Id_Mesero, Id_Mesa, FK_Id_Medio_Pago)
+            ("Cantidad_Productos", "Cantidad_clientes", "Monto_Total", "Fecha_Venta", "FK_Id_Mesero", "Id_Mesa", "FK_Id_Medio_Pago")
             VALUES (%s, %s, %s, %s, %s, %s, %s)
-            RETURNING Id_Venta
+            RETURNING "Id_Venta"
         """, (num_productos, cantidad_clientes, monto_total, fecha_venta, id_mesero, id_mesa, id_medio))
         id_venta = cur.fetchone()[0]
         for id_prod, cantidad in detalles:
             cur.execute("""
-                INSERT INTO "Consumibles_Vendidos" (FK_Id_Venta, FK_Id_Consumible, Cantidad)
+                INSERT INTO "Consumibles_Vendidos" ("FK_Id_Venta", "FK_Id_Consumible", "Cantidad")
                 VALUES (%s, %s, %s)
             """, (id_venta, id_prod, cantidad))
         registrarIngredientesUsados(id_venta, detalles)
