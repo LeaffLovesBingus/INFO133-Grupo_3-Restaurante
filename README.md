@@ -18,7 +18,8 @@ Sistema de base de datos que permita registrar las ventas realizadas en un resta
 
 Mantener un sistema de gestión de un restaurante, para los pedidos, empleados, ventas e inventario. Para ello, el sistema tendrá las siguientes funcionalidades:
 - Cada trabajador tendrá acceso a una interfaz de inicio de sesión donde podrá
-    > Como mesero, acceder a un sistema de gestión de mesas y sus pedidos
+    > Como mesero, acceder a un sistema de gestión de mesas y sus pedidos.
+     
     > Como administrador o mánager, acceder al registro de inventario, además de poder ver resúmenes estadísticos mediante gráficos
 
 ## Integrantes:
