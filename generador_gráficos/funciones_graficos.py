@@ -143,11 +143,20 @@ def graficar_consumible_mas_vendido_por_mes(año:int) -> None:
     except Exception as e:
         print(f"# Error al graficar consumible más vendido por mes\nDetalle -> {e}")
 
-def main():
+    # Graficar ventas por mesero por mes por año
+    # Graficar ventas consumibles por mes por año
+    # Graficar que ingrediente se usa más por mes
+    # Graficar que cocinero usa más ingredientes por mes
+    # Graficar que numero de ingredientes usados por mes
+    # Graficar que mesero vende más por año (torta)
+    # Graficar que cocinero usa más ingredientes por año (torta)
 
-    graficar_numero_ventas_por_mes(2024)
-    graficar_ventas_por_año(2024)
-    graficar_consumible_mas_vendido_por_mes(2024)
+def main():
+    año = 2024
+
+    graficar_numero_ventas_por_mes(año)
+    graficar_ventas_por_año(año)
+    graficar_consumible_mas_vendido_por_mes(año)
 
     print("> Gráficos generados con éxito")
 
