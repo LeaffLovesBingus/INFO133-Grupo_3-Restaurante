@@ -1,8 +1,8 @@
 # INFO133-Grupo_3-Restaurante
 Trabajo grupal semestral asignatura base de datos
 
-> Requerimientos
-*Que aquí vaya el texto que contenga los requerimientos jeje*
+## Requerimientos
+*Que aca vayan los requerimientos*
 
 ## Integrantes:
 - Eduardo Montecinos
