@@ -3,16 +3,32 @@ from faker import Faker
 import random
 from datetime import datetime, timedelta
 
-conn = psycopg2.connect(
-    host="localhost",
-    database="sistema_restaurante",
-    user="usuario_restaurante",
-    password="1234"
-)
-cur = conn.cursor()
 
-# nota: no me podido probar si esto funciona porque aun tengo que solucionar algo con mi pc
-# segun yo tiene sentido y el chatgpt me dice que esta bien
+def generar_datos_random():
+    global conn_dr
+    global cur_dr
+
+    conn_dr = psycopg2.connect(
+        host="localhost",
+        database="sistema_restaurante",
+        user="usuario_restaurante",
+        password="1234"
+    )
+    cur_dr = conn_dr.cursor()
+
+    generarMedioPago()
+    generarMeseros(15)
+    generarCocineros(15)
+    generarIngredientes() #5
+    generarConsumibles(5) #5
+    print("Datos generados correctamente")
+    generarVentas(800)
+    print("Ventas generadas correctamente")
+    
+    conn_dr.commit()
+    cur_dr.close()
+    conn_dr.close()
+
 
 fake = Faker('es_CL')
 
@@ -50,8 +66,8 @@ def generarMeseros(n):
         nombre = fake.first_name()
         apellido = fake.last_name()
         correo = fake.email()
-        sueldo = random.randint(500000,800000)
-        cur.execute("""
+        sueldo = random.choice([500000,800000])
+        cur_dr.execute("""
             INSERT INTO "Mesero" ("Nombre", "Apellido", "Correo", "Sueldo")
             VALUES (%s, %s, %s, %s)
             """, (nombre, apellido, correo, sueldo))
@@ -59,7 +75,7 @@ def generarMeseros(n):
 def generarMedioPago():
     medios = ['Efectivo', 'Tarjeta Crédito', 'Tarjeta Débito', 'Transferencia', 'Cheque']
     for medio in medios:
-        cur.execute("""
+        cur_dr.execute("""
             INSERT INTO "Medio_Pago" ("Medio_Pago")
             VALUES (%s)
         """, (medio,))
@@ -69,13 +85,13 @@ def generarCocineros(n):
         nombre = fake.first_name()
         apellido = fake.last_name()
         correo = fake.email()
-        sueldo = random.randint(500000, 800000)
-        cur.execute("""
+        sueldo = random.choice([500000, 800000])
+        cur_dr.execute("""
             INSERT INTO "Cocinero" ("Nombre", "Apellido", "Correo", "Sueldo")
             VALUES (%s, %s, %s, %s)
         """, (nombre, apellido, correo, sueldo))
 
-def generarIngredientes(n):
+def generarIngredientes():
     tipos = {
         'Verdura': ['Tomate', 'Lechuga', 'Palta'],
         'Carne': ['Hamburguesa', 'Salchicha','Carne de vacuno','Pollo'],
@@ -84,15 +100,14 @@ def generarIngredientes(n):
         'Lácteo': ['Queso'],
         'Masas': ['Pan']
     }
-    todos_ingredientes = [ing for sublist in tipos.values() for ing in sublist]
-    ingredientes_seleccionados = random.sample(todos_ingredientes, min(n, len(todos_ingredientes)))
-    for nombre in ingredientes_seleccionados:
-        tipo = next((key for key, lista in tipos.items() if nombre in lista), 'Misc')
-        cantidad = random.randint(3, 5)
-        cur.execute("""
+    for tipo, lista in tipos.items():
+        for nombre_ingrediente in lista:
+            cantidad = random.randint(3,5)
+            cur_dr.execute("""
             INSERT INTO "Ingredientes" ("Nombre", "Tipo", "Cantidad")
             VALUES (%s, %s, %s)
-        """, (nombre, tipo, cantidad))
+            """, (nombre_ingrediente, tipo, cantidad))
+            
 
 def generarConsumibles(n):
     nombre_menu = {
@@ -107,15 +122,15 @@ def generarConsumibles(n):
     for _ in range(n):
         nombre = random.choice(list(nombre_menu.keys()))
         precio, categoria = nombre_menu[nombre]
-        cur.execute("""
+        cur_dr.execute("""
             INSERT INTO "Consumibles" ("Nombre", "Precio_unidad", "Categoria")
             VALUES (%s, %s, %s)
         """, (nombre, precio, categoria))
 
 def registrarIngredientesUsados(id_venta, detalles):
     for id_cons, cantidad_vendida in detalles:
-        cur.execute('SELECT "Nombre" FROM "Consumibles" WHERE "Id_consumibles" = %s', (id_cons,))
-        res = cur.fetchone()
+        cur_dr.execute('SELECT "Nombre" FROM "Consumibles" WHERE "Id_consumibles" = %s', (id_cons,))
+        res = cur_dr.fetchone()
         if not res:
             continue
         nombre_consumible = res[0]
@@ -124,26 +139,26 @@ def registrarIngredientesUsados(id_venta, detalles):
         ingredientes = ingredientes_por_consumible[nombre_consumible]
         for nombre_ingrediente, cant_por_unidad in ingredientes.items():
             cantidad_total = cant_por_unidad * cantidad_vendida
-            cur.execute('SELECT "Id_ingrediente" FROM "Ingredientes" WHERE "Nombre" = %s', (nombre_ingrediente,))
-            res_ing = cur.fetchone()
+            cur_dr.execute('SELECT "Id_ingrediente" FROM "Ingredientes" WHERE "Nombre" = %s', (nombre_ingrediente,))
+            res_ing = cur_dr.fetchone()
             if res_ing is None:
                 continue
             id_ingrediente = res_ing[0]
-            cur.execute('SELECT "Id_cocinero" FROM "Cocinero" ORDER BY RANDOM() LIMIT 1')
-            id_cocinero = cur.fetchone()[0]
-            cur.execute("""
+            cur_dr.execute('SELECT "Id_cocinero" FROM "Cocinero" ORDER BY RANDOM() LIMIT 1')
+            id_cocinero = cur_dr.fetchone()[0]
+            cur_dr.execute("""
                 INSERT INTO "Hechos_Ingredientes_Usados"
                 ("FK_Id_consumible", "FK_Id_ingrediente", "Cantidad", "Fecha_uso", "FK_Id_cocinero")
                 VALUES (%s, %s, %s, NOW(), %s)
             """, (id_cons, id_ingrediente, cantidad_total, id_cocinero))
 
 def generarVentas(n):
-    cur.execute('SELECT "Id_mesero" FROM "Mesero"')
-    meseros = [row[0] for row in cur.fetchall()]
-    cur.execute('SELECT "Id_Medio_Pago" FROM "Medio_Pago"')
-    medios = [row[0] for row in cur.fetchall()]
-    cur.execute('SELECT "Id_consumibles", "Precio_unidad" FROM "Consumibles"')
-    consumibles = cur.fetchall()
+    cur_dr.execute('SELECT "Id_mesero" FROM "Mesero"')
+    meseros = [row[0] for row in cur_dr.fetchall()]
+    cur_dr.execute('SELECT "Id_Medio_Pago" FROM "Medio_Pago"')
+    medios = [row[0] for row in cur_dr.fetchall()]
+    cur_dr.execute('SELECT "Id_consumibles", "Precio_unidad" FROM "Consumibles"')
+    consumibles = cur_dr.fetchall()
     if not meseros or not medios or not consumibles:
         return
     for _ in range(n):
@@ -160,33 +175,16 @@ def generarVentas(n):
             cantidad = random.randint(1, 3)
             monto_total += precio * cantidad
             detalles.append((id_prod, cantidad))
-        cur.execute("""
+        cur_dr.execute("""
             INSERT INTO "Hechos_Ventas" 
             ("Cantidad_Productos", "Cantidad_clientes", "Monto_Total", "Fecha_Venta", "FK_Id_Mesero", "Id_Mesa", "FK_Id_Medio_Pago")
             VALUES (%s, %s, %s, %s, %s, %s, %s)
             RETURNING "Id_Venta"
         """, (num_productos, cantidad_clientes, monto_total, fecha_venta, id_mesero, id_mesa, id_medio))
-        id_venta = cur.fetchone()[0]
+        id_venta = cur_dr.fetchone()[0]
         for id_prod, cantidad in detalles:
-            cur.execute("""
+            cur_dr.execute("""
                 INSERT INTO "Consumibles_Vendidos" ("FK_Id_Venta", "FK_Id_Consumible", "Cantidad")
                 VALUES (%s, %s, %s)
             """, (id_venta, id_prod, cantidad))
         registrarIngredientesUsados(id_venta, detalles)
-    conn.commit()
-
-if __name__ == "__main__":
-    generarMedioPago()
-    meseros = int(input("Cantidad de meseros: "))
-    generarMeseros(meseros)
-    cocineros = int(input("Cantidad de cocineros: "))
-    generarCocineros(cocineros)
-    generarIngredientes(5)
-    generarConsumibles(5)
-    print("pescó")
-
-    ventas = int(input("Ventas a generar: "))
-    generarVentas(ventas)
-
-cur.close()
-conn.close()

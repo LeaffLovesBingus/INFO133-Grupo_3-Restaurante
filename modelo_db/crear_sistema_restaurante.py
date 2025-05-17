@@ -1,5 +1,6 @@
 import psycopg2
 from getpass import getpass
+import datos_random
 
 
 def crear_sistema_restaurantes():
@@ -105,8 +106,13 @@ if __name__ == "__main__":
         crear_sistema_restaurantes()
         crear_esquema_bd()
 
+        # Generar datos aleatorios
+        datos_random.generar_datos_random()
+        
         cur.close()
         conn.close()
 
     except Exception as e:
         print(f"# Fallo de conexión\nDetalle: {e}")
+
+    
