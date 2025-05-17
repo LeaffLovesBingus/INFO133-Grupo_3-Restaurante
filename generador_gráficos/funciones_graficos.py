@@ -225,6 +225,58 @@ def total_ventas_mesero_por_año(año: int):
         print(f'# Error al graficar porcentaje ventas por mesero\nDetalle -> {e}')
 
 
+def graficar_uso_ingredientes(año:int) -> None:
+    # Genera un gráfico de barras con el consumible más vendido por mes
+
+    try:
+        # Conexión a la base de datos
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+
+        # Consulta SQL: para cada mes, el consumible más vendido
+        query = f"""
+        SELECT 
+            EXTRACT(MONTH FROM hi."Fecha_uso") AS mes, 
+            i."Nombre" AS nombre_ingrediente, 
+            SUM(hi."Cantidad") AS total_usado
+        FROM "Hechos_Ingredientes_Usados" hi
+        JOIN "Ingredientes" i ON hi."FK_Id_ingrediente" = i."Id_ingrediente"
+        WHERE EXTRACT(YEAR FROM hi."Fecha_uso") = {año}
+        GROUP BY mes, i."Nombre"
+        ORDER BY mes, i."Nombre";
+        """
+
+        df = pd.read_sql_query(query, engine)
+        df['mes'] = df['mes'].astype(int)
+        df['mes_nombre'] = df['mes'].apply(clasificar_mes)
+        df = df.sort_values('mes')
+
+        # Pivotear el DataFrame: filas=mes, columnas=ingredientes, valores=total_vendido
+        df_pivot = df.pivot(index='mes_nombre', 
+                            columns='nombre_ingrediente', 
+                            values='total_usado').fillna(0)
+        
+        # Aseguro orden de los meses y pivoteo denuevo
+        meses_orden = [clasificar_mes(i) for i in range(1, 13)]
+        df_pivot = df_pivot.reindex(meses_orden).fillna(0)
+
+        # Graficar
+        plt.figure(figsize=(12, 7))
+        for consumible in df_pivot.columns:
+            plt.plot(df_pivot.index, df_pivot[consumible], marker='o', label=consumible)
+        plt.title(f'Uso Ingredientes por Mes, Año {año}')
+        plt.xlabel('Mes')
+        plt.ylabel('Cantidad Usado')
+        plt.xticks(rotation=45)
+        plt.legend(title='Ingrediente')
+
+        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
+
+        plt.tight_layout()
+        plt.savefig(f'gráficos/grafico_uso_ingredientes_{año}.png')
+        plt.close()
+
+    except Exception as e:
+        print(f"# Error al graficar ventas de todos los consumibles por mes\nDetalle -> {e}")
 
 
 # Graficar que cocinero usa más ingredientes por año (torta)
