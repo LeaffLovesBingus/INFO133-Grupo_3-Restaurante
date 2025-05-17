@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 def clasificar_mes(mes:int) -> str:
@@ -143,6 +144,7 @@ def graficar_ventas_consumibles(año:int) -> None:
         plt.ylabel('Cantidad Vendida')
         plt.xticks(rotation=45)
         plt.legend(title='Consumible')
+        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
         plt.tight_layout()
         plt.savefig(f'gráficos/{año}/grafico_ventas_consumibles_{año}.png')
         plt.close()
@@ -272,7 +274,7 @@ def graficar_uso_ingredientes(año:int) -> None:
         plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
 
         plt.tight_layout()
-        plt.savefig(f'gráficos/grafico_uso_ingredientes_{año}.png')
+        plt.savefig(f'gráficos/{año}/grafico_uso_ingredientes_{año}.png')
         plt.close()
 
     except Exception as e:
