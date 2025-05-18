@@ -135,11 +135,21 @@ def graficar_ventas_consumibles(año:int) -> None:
         meses_orden = [clasificar_mes(i) for i in range(1, 13)]
         df_pivot = df_pivot.reindex(meses_orden).fillna(0)
 
-        # Graficar
+        # Definir marcadores para cada ingrediente
+        marcadores = ['o', 's', '^', 'D', 'v', '*', 'P', 'X', 'h', '+', 'x', '1', '2', '3', '4', '|', '_']
+        consumibles = list(df_pivot.columns)
+
         # Graficar
         plt.figure(figsize=(12, 7))
-        for consumible in df_pivot.columns:
-            plt.plot(df_pivot.index, df_pivot[consumible], marker='o', label=consumible)
+        for idx, consumible in enumerate(consumibles):
+            marcador = marcadores[idx % len(marcadores)]
+            plt.plot(
+                df_pivot.index, 
+                df_pivot[consumible],
+                marker=marcador,
+                markersize=8, 
+                label=consumible
+            )
         plt.title(f'Análisis Ventas Consumibles, Año {año}')
         plt.xlabel('Mes')
         plt.ylabel('Cantidad Vendida')
@@ -303,10 +313,19 @@ def graficar_uso_ingredientes(año:int) -> None:
         meses_orden = [clasificar_mes(i) for i in range(1, 13)]
         df_pivot = df_pivot.reindex(meses_orden).fillna(0)
 
+        # Definir marcadores para cada ingrediente
+        marcadores = ['o', 's', '^', 'D', 'v', '*', 'P', 'X', 'h', '+', 'x', '1', '2', '3', '4', '|', '_']
+        ingredientes = list(df_pivot.columns)
+
         # Graficar
         plt.figure(figsize=(12, 7))
-        for consumible in df_pivot.columns:
-            plt.plot(df_pivot.index, df_pivot[consumible], marker='o', label=consumible)
+        for idx, ingrediente in enumerate(ingredientes):
+            marcador = marcadores[idx % len(marcadores)]
+            plt.plot(df_pivot.index,
+                    df_pivot[ingrediente], 
+                    marker=marcador,
+                    markersize=8, 
+                    label=ingrediente)
         plt.title(f'Uso Ingredientes por Mes, Año {año}')
         plt.xlabel('Mes')
         plt.ylabel('Cantidad Usado')
@@ -326,6 +345,10 @@ def main():
     graficar_numero_ventas_por_mes(año)
     graficar_total_ventas_por_mes(año)
     graficar_ventas_consumibles(año)
+    graficar_uso_ingredientes(año)
+    graficar_ventas_consumibles(año)
+    ventas_mesero_por_año(año)
+
 
     print("> Gráficos generados con éxito")
 
