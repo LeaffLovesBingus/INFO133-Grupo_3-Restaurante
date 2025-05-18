@@ -27,6 +27,17 @@ Mantener un sistema de gestión de un restaurante, para los pedidos, empleados, 
 ![Modelo base de datos analítica](documentos/modelodb-analisis.png)
 Creado en [dbdiagram.io](https://dbdiagram.io/d/RestaurantDB-V2-0-6818e8e31ca52373f588d4c4)
 
+
+## Como ejecutar el programa
+
+Para ejecutar el programa, abra una terminal en la carpeta del proyecto. Ya dentro de este, deberá escribir:
+> python analisis.py {año}
+
+Donde el argumento 'año' será el año donde se desean generar datos y agrupar su información en los gráficos.
+_La parte de 'python' podrá cambiar según la version de python que este instalada en el dispositivo_
+
+
+
 ## Integrantes:
 - Eduardo Montecinos
 - Rodrigo González
