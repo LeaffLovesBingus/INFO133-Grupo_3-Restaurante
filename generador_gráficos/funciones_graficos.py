@@ -151,21 +151,6 @@ def graficar_ventas_consumibles(año:int) -> None:
     except Exception as e:
         print(f"# Error al graficar consumible más vendido por mes\nDetalle -> {e}")
 
-# Graficar ventas por mesero por mes por año
-def ventas_por_mesero_por_mes(año: int):
-    ...  
-
-# Graficar que ingrediente se usa más por mes
-def ingrediende_mas_usado_por_mes(año: int):
-    ...
-
-# Graficar que cocinero usa más ingredientes por mes
-def ingredientes_por_cocinero_por_mes(año: int):
-    ...
-
-# Graficar que numero de ingredientes usados por mes
-def numero_ingredientes_usados_por_mes(año: int):
-    ...
 
 def ventas_realizadas_mesero_por_año(año: int):
 # Genera un gráfico de torta con los porcentajes de las ventas realizadas por los meseros
@@ -274,11 +259,6 @@ def graficar_uso_ingredientes(año:int) -> None:
 
     except Exception as e:
         print(f"# Error al graficar ventas de todos los consumibles por mes\nDetalle -> {e}")
-
-
-# Graficar que cocinero usa más ingredientes por año (torta)
-def total_uso_ingredientes_por_cocinero(año: int):
-    ...
 
 
 def main():

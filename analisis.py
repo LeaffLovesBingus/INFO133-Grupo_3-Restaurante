@@ -23,16 +23,16 @@ def main():
     print("> (Barras) Total ventas por mes generado con éxito")
 
     graficar_ventas_consumibles(año)
-    print("> (Barras) Ventas por consumibles generado con éxito")
+    print("> (Lineas) Ventas por consumibles generado con éxito")
+
+    graficar_uso_ingredientes(año)
+    print("> (Lineas) Uso de ingredientes generado con éxito")
 
     ventas_realizadas_mesero_por_año(año)
     print("> (Torta) Ventas realizadas por mesero generado con éxito")
 
     total_ventas_mesero_por_año(año)
     print("> (Torta) Montos totales de las ventas realizadas por los meseros generado con éxito")
-
-    graficar_uso_ingredientes(año)
-    print("> (Barras) Uso de ingredientes generado con éxito")
 
 
 if __name__ == "__main__":
