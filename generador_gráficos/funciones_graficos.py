@@ -154,8 +154,7 @@ def graficar_ventas_consumibles(año:int) -> None:
 
 # Graficar ventas por mesero por mes por año
 def ventas_por_mesero_por_mes(año: int):
-    ...
-    
+    ...  
 
 # Graficar que ingrediente se usa más por mes
 def ingrediende_mas_usado_por_mes(año: int):
