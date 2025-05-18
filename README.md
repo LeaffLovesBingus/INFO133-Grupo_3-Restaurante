@@ -22,6 +22,11 @@ Mantener un sistema de gestión de un restaurante, para los pedidos, empleados, 
      
     > Como administrador o mánager, acceder al registro de inventario, además de poder ver resúmenes estadísticos mediante gráficos
 
+## Modelo base de datos de análisis
+
+![Modelo base de datos analítica](documentos/modelodb-analisis.png)
+Creado en [dbdiagram.io](https://dbdiagram.io/d/RestaurantDB-V2-0-6818e8e31ca52373f588d4c4)
+
 ## Integrantes:
 - Eduardo Montecinos
 - Rodrigo González
