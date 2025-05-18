@@ -1,6 +1,6 @@
 import psycopg2
 from getpass import getpass
-import datos_random
+import datos_random as dr
 
 
 def crear_sistema_restaurantes():
@@ -107,7 +107,7 @@ if __name__ == "__main__":
         crear_esquema_bd()
 
         # Generar datos aleatorios
-        datos_random.generar_datos_random()
+        dr.generar_datos_random()
         
         cur.close()
         conn.close()

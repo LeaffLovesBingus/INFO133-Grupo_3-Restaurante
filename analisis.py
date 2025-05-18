@@ -7,6 +7,7 @@ from generador_gráficos.funciones_graficos import *
 def main():
     if (len(sys.argv) != 2):
         print("Error, ejecute como: python analisis.py 'año'")
+        sys.exit(1)
 
     año = sys.argv[1]
     carpeta_año = Path(f"gráficos/{año}")
@@ -19,31 +20,19 @@ def main():
     print("> (Barras) Número de ventas por mes generado con éxito")
 
     graficar_total_ventas_por_mes(año)
-    print("> (Barras) Número total de ventas por mes generado con éxito")
+    print("> (Barras) Total ventas por mes generado con éxito")
 
     graficar_ventas_consumibles(año)
-    print("> (Barras) Consumible más vendido por mes generado con éxito")
+    print("> (Barras) Ventas por consumibles generado con éxito")
 
-    #ventas_por_mesero_por_mes(año)
-    print("> (Barras) Ventas por mesero por mes generado con éxito")
-    
-    #ventas_consumibles_por_mes(año)
-    print("> (Barras) Número de ventas de cada consumible por mes generado con éxito")
+    ventas_realizadas_mesero_por_año(año)
+    print("> (Torta) Ventas realizadas por mesero generado con éxito")
 
-    #ingrediende_mas_usado_por_mes(año)
-    print("> (Barras) Ingrediente más usado por mes generado con éxito")
+    total_ventas_mesero_por_año(año)
+    print("> (Torta) Montos totales de las ventas realizadas por los meseros generado con éxito")
 
-    #ingredientes_por_cocinero_por_mes(año)
-    print("> (Barras) Cocineros que utilizan más ingredientes por mes generado con éxito")
-
-    #numero_ingredientes_usados_por_mes(año)
-    print("> (Barras) Número de ingredientes usados por mes generado con éxito")
-
-    #ventas_mesero_por_año(año)
-    print("> (Torta) Número de ventas por mesero en todo el año generado con éxito")
-
-    #total_uso_ingredientes_por_cocinero(año)
-    print("> (Torta) Cocineros que utilizan más ingredientes por mes generado con éxito")
+    graficar_uso_ingredientes(año)
+    print("> (Barras) Uso de ingredientes generado con éxito")
 
 
 if __name__ == "__main__":

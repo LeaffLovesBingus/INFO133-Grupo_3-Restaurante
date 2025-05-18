@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 
 def clasificar_mes(mes:int) -> str:
@@ -22,6 +21,7 @@ def clasificar_mes(mes:int) -> str:
     }
 
     return meses.get(mes, "Mes no válido")
+
 
 def graficar_numero_ventas_por_mes(año:int) -> None:
     #Genera un gráfico de barras con el número de ventas por mes
@@ -144,7 +144,6 @@ def graficar_ventas_consumibles(año:int) -> None:
         plt.ylabel('Cantidad Vendida')
         plt.xticks(rotation=45)
         plt.legend(title='Consumible')
-        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
         plt.tight_layout()
         plt.savefig(f'gráficos/{año}/grafico_ventas_consumibles_{año}.png')
         plt.close()
@@ -198,7 +197,7 @@ def ventas_realizadas_mesero_por_año(año: int):
 
 
 def total_ventas_mesero_por_año(año: int):
-# Genera un gráfico de torta con los porcentajes de los montos totales de las ventas realizadas por los meseros
+    '''Genera un gráfico de torta con los porcentajes de los montos totales de las ventas realizadas por los meseros'''
     try:
         # Conexión a la base de datos
         engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
@@ -269,9 +268,6 @@ def graficar_uso_ingredientes(año:int) -> None:
         plt.ylabel('Cantidad Usado')
         plt.xticks(rotation=45)
         plt.legend(title='Ingrediente')
-
-        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
-
         plt.tight_layout()
         plt.savefig(f'gráficos/{año}/grafico_uso_ingredientes_{año}.png')
         plt.close()

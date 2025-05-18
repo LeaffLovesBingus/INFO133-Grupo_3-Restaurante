@@ -1,7 +1,7 @@
 import psycopg2
 from faker import Faker
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 def generar_datos_random():
@@ -22,7 +22,7 @@ def generar_datos_random():
     generarIngredientes() #5
     generarConsumibles(5) #5
     print("Datos generados correctamente")
-    generarVentas(800)
+    generarVentas(2000)
     print("Ventas generadas correctamente")
     
     conn_dr.commit()
@@ -127,7 +127,7 @@ def generarConsumibles(n):
             VALUES (%s, %s, %s)
         """, (nombre, precio, categoria))
 
-def registrarIngredientesUsados(id_venta, detalles):
+def registrarIngredientesUsados(id_venta, detalles, fecha_venta):
     for id_cons, cantidad_vendida in detalles:
         cur_dr.execute('SELECT "Nombre" FROM "Consumibles" WHERE "Id_consumibles" = %s', (id_cons,))
         res = cur_dr.fetchone()
@@ -149,8 +149,8 @@ def registrarIngredientesUsados(id_venta, detalles):
             cur_dr.execute("""
                 INSERT INTO "Hechos_Ingredientes_Usados"
                 ("FK_Id_consumible", "FK_Id_ingrediente", "Cantidad", "Fecha_uso", "FK_Id_cocinero")
-                VALUES (%s, %s, %s, NOW(), %s)
-            """, (id_cons, id_ingrediente, cantidad_total, id_cocinero))
+                VALUES (%s, %s, %s, %s, %s)
+            """, (id_cons, id_ingrediente, cantidad_total, fecha_venta, id_cocinero))
 
 def generarVentas(n):
     cur_dr.execute('SELECT "Id_mesero" FROM "Mesero"')
@@ -166,7 +166,7 @@ def generarVentas(n):
         id_mesero = random.choice(meseros)
         id_medio = random.choice(medios)
         id_mesa = random.randint(1, 10)
-        fecha_venta = fake.date_time_between(start_date='-30d', end_date='now')
+        fecha_venta = fake.date_time_between(start_date=datetime(2010, 1, 1), end_date=datetime.now())
         num_productos = random.randint(1, 5)
         productos_vendidos = random.sample(consumibles, min(num_productos, len(consumibles)))
         monto_total = 0
@@ -187,4 +187,4 @@ def generarVentas(n):
                 INSERT INTO "Consumibles_Vendidos" ("FK_Id_Venta", "FK_Id_Consumible", "Cantidad")
                 VALUES (%s, %s, %s)
             """, (id_venta, id_prod, cantidad))
-        registrarIngredientesUsados(id_venta, detalles)
+        registrarIngredientesUsados(id_venta, detalles, fecha_venta)
