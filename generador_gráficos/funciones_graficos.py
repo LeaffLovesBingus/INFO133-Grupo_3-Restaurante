@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 
 def clasificar_mes(mes:int) -> str:
@@ -99,7 +100,7 @@ def graficar_ventas_por_año(año:int) -> None:
         print(f"# Error al graficar ventas por año\nDetalle -> {e}")
 
 
-def graficar_consumible_mas_vendido_por_mes(año:int) -> None:
+def graficar_ventas_consumibles(año:int) -> None:
     # Genera un gráfico de barras con el consumible más vendido por mes
 
     try:
@@ -108,44 +109,163 @@ def graficar_consumible_mas_vendido_por_mes(año:int) -> None:
 
         # Consulta SQL: para cada mes, el consumible más vendido
         query = f"""
-        SELECT mes, nombre_consumible, total_vendido FROM (
-            SELECT 
-                EXTRACT(MONTH FROM hv."Fecha_Venta") AS mes, 
-                c."Nombre" AS nombre_consumible, 
-                SUM(cv."Cantidad") AS total_vendido,
-                ROW_NUMBER() OVER (PARTITION BY EXTRACT(MONTH FROM hv."Fecha_Venta") ORDER BY SUM(cv."Cantidad") DESC) as rn
-            FROM "Hechos_Ventas" hv
-            JOIN "Consumibles_Vendidos" cv ON hv."Id_Venta" = cv."FK_Id_Venta"
-            JOIN "Consumibles" c ON cv."FK_Id_Consumible" = c."Id_consumibles"
-            WHERE EXTRACT(YEAR FROM hv."Fecha_Venta") = {año}
-            GROUP BY mes, c."Nombre"
-        ) t
-        WHERE rn = 1
-        ORDER BY mes;
+        SELECT 
+            EXTRACT(MONTH FROM hv."Fecha_Venta") AS mes, 
+            c."Nombre" AS nombre_consumible, 
+            SUM(cv."Cantidad") AS total_vendido
+        FROM "Hechos_Ventas" hv
+        JOIN "Consumibles_Vendidos" cv ON hv."Id_Venta" = cv."FK_Id_Venta"
+        JOIN "Consumibles" c ON cv."FK_Id_Consumible" = c."Id_consumibles"
+        WHERE EXTRACT(YEAR FROM hv."Fecha_Venta") = {año}
+        GROUP BY mes, c."Nombre"
+        ORDER BY mes, c."Nombre";
         """
 
         df = pd.read_sql_query(query, engine)
+        df['mes'] = df['mes'].astype(int)
         df['mes_nombre'] = df['mes'].apply(clasificar_mes)
+        df = df.sort_values('mes')
+
+        # Pivotear el DataFrame: filas=mes, columnas=consumible, valores=total_vendido
+        df_pivot = df.pivot(index='mes_nombre', 
+                            columns='nombre_consumible', 
+                            values='total_vendido').fillna(0)
+        
+        # Aseguro orden de los meses y pivoteo denuevo
+        meses_orden = [clasificar_mes(i) for i in range(1, 13)]
+        df_pivot = df_pivot.reindex(meses_orden).fillna(0)
 
         # Graficar
-        plt.figure(figsize=(10, 6))
-        plt.bar(df['mes_nombre'], df['total_vendido'], color='skyblue')
-        for idx, row in df.iterrows():
-            plt.text(idx, row['total_vendido'], row['nombre_consumible'], ha='center', va='bottom', fontsize=9, rotation=0)
-        plt.title(f'Análisis Consumible Más Vendido por Mes, Año {año}')
+        plt.figure(figsize=(12, 7))
+        for consumible in df_pivot.columns:
+            plt.plot(df_pivot.index, df_pivot[consumible], marker='o', label=consumible)
+        plt.title(f'Ventas de Consumibles por Mes, Año {año}')
         plt.xlabel('Mes')
         plt.ylabel('Cantidad Vendida')
         plt.xticks(rotation=45)
+        plt.legend(title='Consumible')
+        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
         plt.tight_layout()
-        plt.savefig(f'gráficos/grafico_consumible_mas_vendido_{año}_por_mes.png')
+        plt.savefig(f'gráficos/grafico_ventas_todos_consumibles_{año}.png')
         plt.close()
 
     except Exception as e:
-        print(f"# Error al graficar consumible más vendido por mes\nDetalle -> {e}")
+        print(f"# Error al graficar ventas de todos los consumibles por mes\nDetalle -> {e}")
+
+    # Graficar que mesero vende más por año (torta)
+def ventas_mesero_por_año(año: int):
+
+    try:
+        # Conexión a la base de datos
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+
+        # Consulta SQL obtener ventas por mesero
+        query = f"""
+        SELECT m."Nombre" || ' ' || m."Apellido" as nombre_mesero,
+        COUNT(*) as total_ventas
+        FROM "Hechos_Ventas" hv
+        JOIN "Mesero" m ON hv."FK_Id_Mesero" = m."Id_mesero"
+        WHERE EXTRACT(YEAR FROM hv."Fecha_Venta") = {año}
+        GROUP BY nombre_mesero
+        ORDER BY total_ventas DESC;
+        """
+
+        df = pd.read_sql_query(query, engine)
+
+        plt.figure(figsize=(8, 8))
+        plt.pie(df['total_ventas'], labels=df['nombre_mesero'], autopct='%1.0f%%')
+        plt.title(f"Porcentaje Ventas Realizadas por Mesero, Año {año}")
+        plt.tight_layout()
+        plt.savefig(f'gráficos/{año}/grafico_porcentaje_ventas_realizadas_meseros_{año}.png')
+        plt.close()
+    except Exception as e:
+        print(f'# Error al graficar porcentaje ventas por mesero\nDetalle -> {e}')
+
+
+def total_ventas_mesero_por_año(año: int):
+# Genera un gráfico de torta con los porcentajes de los montos totales de las ventas realizadas por los meseros
+    try:
+        # Conexión a la base de datos
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+
+        # Consulta SQL obtener ventas por mesero
+        query = f"""
+        SELECT m."Nombre" || ' ' || m."Apellido" as nombre_mesero,
+        SUM (hv."Monto_Total") as total_ventas
+        FROM "Hechos_Ventas" hv
+        JOIN "Mesero" m ON hv."FK_Id_Mesero" = m."Id_mesero"
+        WHERE EXTRACT(YEAR FROM hv."Fecha_Venta") = {año}
+        GROUP BY nombre_mesero
+        ORDER BY total_ventas DESC;
+        """
+
+        df = pd.read_sql_query(query, engine)
+
+        plt.figure(figsize=(8, 8))
+        plt.pie(df['total_ventas'], labels=df['nombre_mesero'], autopct='%1.0f%%')
+        plt.title(f"Porcentaje Ventas por Mesero, Año {año}")
+        plt.tight_layout()
+        plt.savefig(f'gráficos/{año}/grafico_porcentaje_total_ventas_meseros_{año}.png')
+        plt.close()
+    except Exception as e:
+        print(f'# Error al graficar porcentaje ventas por mesero\nDetalle -> {e}')
 
     # Graficar ventas por mesero por mes por año
     # Graficar ventas consumibles por mes por año
     # Graficar que ingrediente se usa más por mes
+def graficar_uso_ingredientes(año:int) -> None:
+    # Genera un gráfico de barras con el consumible más vendido por mes
+
+    try:
+        # Conexión a la base de datos
+        engine = create_engine('postgresql+psycopg2://usuario_restaurante:1234@localhost/sistema_restaurante')
+
+        # Consulta SQL: para cada mes, el consumible más vendido
+        query = f"""
+        SELECT 
+            EXTRACT(MONTH FROM hi."Fecha_uso") AS mes, 
+            i."Nombre" AS nombre_ingrediente, 
+            SUM(hi."Cantidad") AS total_usado
+        FROM "Hechos_Ingredientes_Usados" hi
+        JOIN "Ingredientes" i ON hi."FK_Id_ingrediente" = i."Id_ingrediente"
+        WHERE EXTRACT(YEAR FROM hi."Fecha_uso") = {año}
+        GROUP BY mes, i."Nombre"
+        ORDER BY mes, i."Nombre";
+        """
+
+        df = pd.read_sql_query(query, engine)
+        df['mes'] = df['mes'].astype(int)
+        df['mes_nombre'] = df['mes'].apply(clasificar_mes)
+        df = df.sort_values('mes')
+
+        # Pivotear el DataFrame: filas=mes, columnas=ingredientes, valores=total_vendido
+        df_pivot = df.pivot(index='mes_nombre', 
+                            columns='nombre_ingrediente', 
+                            values='total_usado').fillna(0)
+        
+        # Aseguro orden de los meses y pivoteo denuevo
+        meses_orden = [clasificar_mes(i) for i in range(1, 13)]
+        df_pivot = df_pivot.reindex(meses_orden).fillna(0)
+
+        # Graficar
+        plt.figure(figsize=(12, 7))
+        for consumible in df_pivot.columns:
+            plt.plot(df_pivot.index, df_pivot[consumible], marker='o', label=consumible)
+        plt.title(f'Uso Ingredientes por Mes, Año {año}')
+        plt.xlabel('Mes')
+        plt.ylabel('Cantidad Usado')
+        plt.xticks(rotation=45)
+        plt.legend(title='Ingrediente')
+
+        plt.yticks(np.arange(0, df_pivot.values.max() + 1, 1))
+
+        plt.tight_layout()
+        plt.savefig(f'gráficos/grafico_uso_ingredientes_{año}.png')
+        plt.close()
+
+    except Exception as e:
+        print(f"# Error al graficar ventas de todos los consumibles por mes\nDetalle -> {e}")
+
     # Graficar que cocinero usa más ingredientes por mes
     # Graficar que numero de ingredientes usados por mes
     # Graficar que mesero vende más por año (torta)
@@ -156,7 +276,10 @@ def main():
 
     graficar_numero_ventas_por_mes(año)
     graficar_ventas_por_año(año)
-    graficar_consumible_mas_vendido_por_mes(año)
+    graficar_ventas_consumibles(año)
+    ventas_mesero_por_año(año)
+    total_ventas_mesero_por_año(año)
+    graficar_uso_ingredientes(año)
 
     print("> Gráficos generados con éxito")
 
