@@ -6,8 +6,8 @@ Los requerimientos fueron muy claros y detallados.
 
 ## Diagrama dbdiagram.io
 
-![Modelo dbdiagram](diagrama_dbdiagram_g4.png)
+![Modelo dbdiagram](diagrama_dbdiagram_g10.png)
 
 ## Diagrama draw.io
 
-![Modelo draw.io](diagrama_drawio_g4.png)
+![Modelo draw.io](diagrama_drawio_g10.png)
