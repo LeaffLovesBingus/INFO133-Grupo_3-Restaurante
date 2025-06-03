@@ -1,4 +1,4 @@
-# Diagrama Entidad-Relación Grupo 4
+# Diagrama Entidad-Relación Grupo 10
 
 ## Comentario
 
