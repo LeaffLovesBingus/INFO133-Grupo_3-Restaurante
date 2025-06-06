@@ -27,6 +27,10 @@ Mantener un sistema de gestión de un restaurante, para los pedidos, empleados, 
 ![Modelo base de datos analítica](documentos/modelodb-analisis.png)
 Creado en [dbdiagram.io](https://dbdiagram.io/d/RestaurantDB-V2-0-6818e8e31ca52373f588d4c4)
 
+## Modelo de base de datos transaccional
+
+![Modelo de base de datos transaccional](grupos/g3/diagrama_bd_transaccional.png)
+Creado en [dbdiagram.io](https://dbdiagram.io/d/RestaurantDB-V3-0-684312615a9a94714e3f2843)
 
 ## Como ejecutar el programa
 
