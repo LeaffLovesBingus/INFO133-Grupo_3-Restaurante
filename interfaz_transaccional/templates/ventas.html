@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>CRUD App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="bg-gray-100 overflow-x-auto px-4">
+    <div class=" overflow-x-auto p-6">
+      <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">CRUD TEST Ventas</h1>
+
+      <table class="min-w-full bg-white rounded-lg shadow overflow-hidden mb-8">
+        <thead class="bg-blue-700 text-white">
+          <tr>
+            <th class="py-3 px-4 text-left">ID</th>
+            <th class="py-3 px-4 text-left">Cantidad Productos</th>
+            <th class="py-3 px-4 text-left">Cantidad Clientes</th>
+            <th class="py-3 px-4 text-left">Monto Total</th>
+            <th class="py-3 px-4 text-left">Fecha Venta</th>
+            <th class="py-3 px-4 text-left">ID Mesero</th>
+            <th class="py-3 px-4 text-left">ID Mesa</th>
+            <th class="py-3 px-4 text-left">ID Medio Pago</th>
+            <th class="py-3 px-4 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data[-10:] %}
+          <tr class="border-b hover:bg-blue-50">
+            <td class="py-2 px-4">{{ row[0] }}</td>
+            <form action="/update" method="post" class="contents">
+              <input type="hidden" name="id" value="{{ row[0] }}">
+              <td class="py-2 px-2">
+                <input type="text" name="cantidad_productos" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="cantidad_clientes" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="monto_total" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="fecha_venta" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="id_mesero" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="id_mesa" value="{{ row[6] }}" class="border rounded px-2 py-1 w-40">
+              </td>
+              <td class="py-2 px-2">
+                <input type="text" name="id_medio_pago" value="{{ row[7] }}" class="border rounded px-2 py-1 w-40">
+              </td>
+              <td class="py-2 px-2 flex gap-2">
+                <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded w-24">Update</button>
+            </form>
+            <form action="/delete" method="post" class="inline">
+              <input type="hidden" name="id" value="{{ row[0] }}">
+              <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
+            </form>
+              </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Nueva Venta</h2>
+      <form action="/create" method="post" class="flex gap-2 mb-3">
+        <input type="text" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
+        <input type="text" name="cantidad_clientes" placeholder="Cantidad Clientes" class="border rounded px-3 py-2" required>
+        <input type="text" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2 w-40" required>
+        <input type="text" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2 w-40" required>
+        <input type="text" name="id_mesero" placeholder="ID Mesero" class="border rounded px-3 py-2 w-40" required>
+        <input type="text" name="id_mesa" placeholder="ID Mesa" class="border rounded px-3 py-2 w-24" required>
+        <input type="text" name="id_medio_pago" placeholder="ID Medio Pago" class="border rounded px-3 py-2 w-24" required>
+        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded cursor-pointer w-24">
+      </form>
+    </div>
+  </body>
+</html>

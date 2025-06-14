@@ -18,7 +18,7 @@ def index():
     cur = conn.cursor()
 
     # Select all products from the table
-    cur.execute('''SELECT * FROM "Medio_Pago"''')
+    cur.execute('''SELECT * FROM "Hechos_Ingredientes_Usados"''')
 
     # Fetch the data
     data = cur.fetchall()
@@ -27,7 +27,7 @@ def index():
     cur.close()
     conn.close()
 
-    return render_template('medio_pago.html', data=data)
+    return render_template('ingredientes.html', data=data)
 
 @app.route('/create', methods=['POST'])
 
@@ -39,15 +39,12 @@ def create():
         password="1234"
     )
     cur = conn.cursor()
-    name = request.form['name']
-    cur.execute(
-        '''INSERT INTO "Medio_Pago" ("Medio_Pago") VALUES (%s)''',
-        (name,)
-    )
-    conn.commit()
+    
+    ...
+
     cur.close()
     conn.close()
-    return redirect(url_for('medio_pago'))
+    return redirect(url_for('ingredientes'))
 
 @app.route('/update', methods=['POST'])
 
@@ -59,16 +56,12 @@ def update():
         password="1234"
     )
     cur = conn.cursor()
-    name = request.form['name']
-    id = request.form['id']
-    cur.execute(
-        '''UPDATE "Medio_Pago" SET "Medio_Pago"=%s WHERE "Id_Medio_Pago"=%s''',
-        (name, id)
-    )
-    conn.commit()
+    
+    ...
+
     cur.close()
     conn.close()
-    return redirect(url_for('medio_pago'))
+    return redirect(url_for('ingredientes'))
 
 @app.route('/delete', methods=['POST'])
 
@@ -82,20 +75,12 @@ def delete():
 
     cur = conn.cursor()
 
-    # Get the data from the form
-    id = request.form['id']
+    ...
 
-    # Delete the data from the table
-    cur.execute('''DELETE FROM "Medio_Pago" WHERE "Id_Medio_Pago"=%s''', (id,))
-
-    # commit the changes
-    conn.commit()
-
-    # close the cursor and connection
     cur.close()
     conn.close()
 
-    return redirect(url_for('medio_pago'))
+    return redirect(url_for('ingredientes'))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

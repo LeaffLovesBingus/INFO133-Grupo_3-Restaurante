@@ -70,7 +70,7 @@ def crear_esquema_bd():
     
     if script:
         try:
-            with open("interfaz_transaccional/modelo_db/modelo_transaccional.sql", 'r', encoding="utf-8") as f:
+            with open("INFO133-Grupo_3-Restaurante/interfaz_transaccional/modelo_db/modelo_transaccional.sql", 'r', encoding="utf-8") as f:
                 script_modelo = f.read()
             
             for statement in script_modelo.split(';'):
