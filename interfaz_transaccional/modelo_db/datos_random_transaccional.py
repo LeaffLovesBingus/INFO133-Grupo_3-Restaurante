@@ -71,8 +71,9 @@ def generarCocineros(n):
         correo = fake.email()
         sueldo = random.choice([700000,800000])
         cur_dr.execute("""
-                       INSERT INTO "Empleados" ("Nombre", "Apellido", "Correo", "Sueldo")
-                       VALUES (%s,%s,%s,%s)
+                    INSERT INTO "Empleados" ("Nombre", "Apellido", "Correo", "Sueldo")
+                    VALUES (%s,%s,%s,%s)
+                    RETURNING "Id_empleado"
                        """, (nombre,apellido,correo,sueldo))
         id_empleado = cur_dr.fetchone()[0]
         cur_dr.execute("""
