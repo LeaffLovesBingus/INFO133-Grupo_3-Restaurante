@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block navbar %}
+<nav class="bg-blue-700 px-4 py-2 shadow-lg sticky top-0 z-50 mb-8 overflow-x-auto">
+  <ul class="flex gap-2 whitespace-nowrap">
+    <li>
+      <a href="#" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Volver al Inicio</a>
+    </li>
+  </ul>
+</nav>
+{% endblock %}
+{% block content %}
+    <body>
+        <div class = "max-w-3xl mx-auto p-6">
+            <h1 class = "text-xl font-bold text-center">Aplicación Base de Datos Transaccional</h1>
+            <div class = "flex flex-col gap-4 mt-6">
+                <!-- Botón principal 1 -->
+                <div class="mb-4">
+                  <button 
+                    onclick="document.getElementById('submenu1').classList.toggle('hidden')" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-center w-full">
+                    Ventas
+                  </button>
+                  <div id="submenu1" class="hidden mt-2 flex flex-col gap-2">
+                    <a href="/medio_pago/listar" 
+                            class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-center">Listar Ventas</a>
+                    <a href="/medio_pago/modificar" 
+                            class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-center">Modificar Ventas</a>
+                    <a href="/medio_pago/eliminar"
+                            class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-center">Eliminar Ventas</a>
+                    <a href="/medio_pago/add"
+                            class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-center">Añadir Ventas</a>
+                  </div>
+                </div>
+        
+                <!-- Botón principal 2 -->
+                <div class="mb-4">
+                  <button 
+                    onclick="document.getElementById('submenu2').classList.toggle('hidden')" 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-center w-full">
+                    Ingredientes Usados
+                  </button>
+                  <div id="submenu2" class="hidden mt-2 flex flex-col gap-2">
+                    <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Listar Ingredientes Usados</button>
+                    <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Modificar Ingredientes Usados</button>
+                    <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Eliminar Ingredientes Usados</button>
+                    <button class="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded">Añadir Ingredientes Usados</button>
+                  </div>
+                </div>
+                <div class="mb-4">
+                  <button 
+                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-center w-full">
+                    Cargar Datos de Prueba
+                  </button>
+                </div>
+            </div>
+
+
+    </body>
+
+{% endblock %}
