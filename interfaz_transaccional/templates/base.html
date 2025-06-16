@@ -1,12 +1,18 @@
 <!DOCTYPE html>
-
-<html lang="en"></html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %} Default {% endblock %}</title>
+    <title>{% block title %} BD Transaccional {% endblock %}</title>
+    <style>
+      body { opacity: 0; transition: opacity 0.2s; }
+    </style>
+    <script>
+      function showBody() { document.body.style.opacity = 1; }
+      setTimeout(showBody, 500); // Fallback por si Tailwind demora en cargar
+    </script>
+    <script src="https://cdn.tailwindcss.com" onload="showBody()"></script>
 </head>
-
-<body class ='bg-gray-100 min-h-screen'>
+<body class="bg-gray-100 min-h-screen">
 {% block navbar %}
 <nav class="bg-blue-700 px-4 py-2 shadow-lg sticky top-0 z-50 mb-8 overflow-x-auto">
   <ul class="flex gap-2 whitespace-nowrap">
@@ -17,8 +23,11 @@
 </nav>
 {% endblock %}
 
-    {% block content %} {% endblock %}
+{% block content %}{% endblock %}
 
 </body>
-<script src="https://cdn.tailwindcss.com"></script>
+<!-- Inject JS -->
+
+<script src="assets/js/inyect/notificacion.js"></script>
+
 </html>
