@@ -41,11 +41,11 @@ CREATE TABLE "Consumibles" (
 );
 
 CREATE TABLE "Cocinero" (
-  "Id_cocinero" integer UNIQUE NOT NULL GENERATED ALWAYS AS IDENTITY
+  "Id_cocinero" integer UNIQUE NOT NULL
 );
 
 CREATE TABLE "Mesero" (
-  "Id_mesero" integer UNIQUE NOT NULL GENERATED ALWAYS AS IDENTITY
+  "Id_mesero" integer UNIQUE NOT NULL
 );
 
 CREATE TABLE "Empleados" (
