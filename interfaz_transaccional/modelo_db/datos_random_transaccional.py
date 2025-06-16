@@ -11,8 +11,8 @@ def generar_datos():
     
     conn_dr = psycopg2.connect(
         host="localhost",
-        database="sistema_restaurante",
-        user="usuario_restaurante",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
         password="1234"
     )
     cur_dr = conn_dr.cursor()

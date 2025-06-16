@@ -1,10 +1,11 @@
 import psycopg2
 from getpass import getpass
+from datos_random_transaccional import generar_datos
 
 
 def crear_sistema_restaurantes():
     '''
-    Crea la base de datos 'sistema_restaurante_transaccional' y luego a su usuario 'usuario_restaurante' 
+    Crea la base de datos 'sistema_restaurante_transaccional' y luego a su usuario 'usuario_restaurante_transaccional' 
     junto con sus permisos.
     '''
     try:
@@ -14,11 +15,11 @@ def crear_sistema_restaurantes():
         cur.execute("CREATE DATABASE sistema_restaurante_transaccional;")
 
         # Crear el usuario para la base de datos
-        cur.execute("CREATE USER usuario_restaurante WITH PASSWORD '1234';")
-        cur.execute("GRANT CONNECT ON DATABASE sistema_restaurante_transaccional TO usuario_restaurante;")
+        cur.execute("CREATE USER usuario_restaurante_transaccional WITH PASSWORD '1234';")
+        cur.execute("GRANT CONNECT ON DATABASE sistema_restaurante_transaccional TO usuario_restaurante_transaccional;")
 
         print("> Base de datos sistema_restaurante_transaccional creada")
-        print("> Usuario creado exitosamente\nNombre: usuario_restaurante\nContraseña: 1234")
+        print("> Usuario creado exitosamente\nNombre: usuario_restaurante_transaccional\nContraseña: 1234")
 
         conn.set_session(autocommit=False)
 
@@ -31,12 +32,12 @@ def crear_sistema_restaurantes():
         )
         cur_sr = conn_sr.cursor()
 
-        # Otorgar permisos a usuario_restaurante
-        cur_sr.execute("GRANT USAGE ON SCHEMA public TO usuario_restaurante;")
-        cur_sr.execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO usuario_restaurante;")
-        cur_sr.execute("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO usuario_restaurante;")
+        # Otorgar permisos a usuario_restaurante_transaccional
+        cur_sr.execute("GRANT USAGE ON SCHEMA public TO usuario_restaurante_transaccional;")
+        cur_sr.execute("GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO usuario_restaurante_transaccional;")
+        cur_sr.execute("ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO usuario_restaurante_transaccional;")
         conn_sr.commit()
-        print("> Permisos para usuario_restaurante concedidos con éxito")
+        print("> Permisos para usuario_restaurante_transaccional concedidos con éxito")
 
         # Cerrar conexión de postgres a sistema_restaurante_transaccional
         cur_sr.close()
@@ -70,7 +71,7 @@ def crear_esquema_bd():
     
     if script:
         try:
-            with open("INFO133-Grupo_3-Restaurante/interfaz_transaccional/modelo_db/modelo_transaccional.sql", 'r', encoding="utf-8") as f:
+            with open("interfaz_transaccional/modelo_db/modelo_transaccional.sql", 'r', encoding="utf-8") as f:
                 script_modelo = f.read()
             
             for statement in script_modelo.split(';'):
@@ -111,4 +112,4 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"# Fallo de conexión\nDetalle: {e}")
 
-    
+    generar_datos()
