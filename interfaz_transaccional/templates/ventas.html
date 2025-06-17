@@ -37,7 +37,7 @@
                 <input type="text" name="monto_total" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="fecha_venta" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+                <input type="datetime-local" name="fecha_venta" value="{{ row[4].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64">
               </td>
               <td class="py-2 px-2">
                 <input type="text" name="id_mesero" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
@@ -66,7 +66,7 @@
         <input type="text" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
         <input type="text" name="cantidad_clientes" placeholder="Cantidad Clientes" class="border rounded px-3 py-2" required>
         <input type="text" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2 w-40" required>
-        <input type="text" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2 w-40" required>
+        <input type="datetime-local" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2 w-40" required>
         <input type="text" name="id_mesero" placeholder="ID Mesero" class="border rounded px-3 py-2 w-40" required>
         <input type="text" name="id_mesa" placeholder="ID Mesa" class="border rounded px-3 py-2 w-24" required>
         <input type="text" name="id_medio_pago" placeholder="ID Medio Pago" class="border rounded px-3 py-2 w-24" required>

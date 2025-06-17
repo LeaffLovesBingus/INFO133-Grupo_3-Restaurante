@@ -95,13 +95,11 @@ def ingredientes(accion):
     # Fetch the data
     data = cur.fetchall()
 
-    
     data = [
         row[:4] + (datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S"),) + row[5:]
         if isinstance(row[4], str) else row
         for row in data
     ]
-
 
     # close the cursor and connection
     cur.close()

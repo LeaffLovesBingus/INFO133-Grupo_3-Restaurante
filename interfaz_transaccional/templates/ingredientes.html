@@ -35,7 +35,7 @@
                 <input type="text" name="cantidad" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="fecha" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+                <input type="datetime-local" name="fecha" value="{{ row[4].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64">
               </td>
               <td class="py-2 px-2">
                 <input type="text" name="id_cocinero" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
@@ -58,7 +58,7 @@
         <input type="text" name="id_consumible" placeholder="ID Consumible" class="border rounded px-3 py-2 flex-1" required>
         <input type="text" name="id_ingrediente" placeholder="ID Ingrediente" class="border rounded px-3 py-2 flex-1" required>
         <input type="text" name="cantidad" placeholder="Cantidad" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="fecha" placeholder="Fecha" class="border rounded px-3 py-2 flex-1" required>
+        <input type="datetime-local" name="fecha" placeholder="Fecha" class="border rounded px-3 py-2 flex-1" required>
         <input type="text" name="id_cocinero" placeholder="ID Cocinero" class="border rounded px-3 py-2 flex-1" required>
         <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
       </form>

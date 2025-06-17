@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from datetime import datetime
 import psycopg2
 
 app = Flask(__name__)
@@ -22,6 +23,12 @@ def index():
 
     # Fetch the data
     data = cur.fetchall()
+
+    data = [
+        row[:4] + (datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S"),) + row[5:]
+        if isinstance(row[4], str) else row
+        for row in data
+    ]
 
     # close the cursor and connection
     cur.close()
