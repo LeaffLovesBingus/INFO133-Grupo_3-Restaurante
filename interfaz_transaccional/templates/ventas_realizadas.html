@@ -55,32 +55,53 @@
             <td class="py-2 px-2">{{ row[6] }}</td>
             {% endif %}
             {% if action == "modificar" %}
-            <form action="/update" method="post" class="contents">
+            <form action="/ventas/update" method="post" class="contents">
               <input type="hidden" name="id" value="{{ row[0] }}">
               <td class="py-2 px-2">
-                <input type="text" name="cantidad_productos" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
+                <input type="number" name="cantidad_productos" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="cantidad_clientes" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
+                <input type="number" name="cantidad_clientes" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
-                <input type="datetime-local" name="fecha_venta" value="{{ row[3].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64">
+                <input type="datetime-local" name="fecha_venta" value="{{ row[3].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_mesero" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+                <select name="id_mesero" class="border rounded px-3 py-2 w-40" required>
+                  {% for mesero in meseros %}
+                    <option value="{{ mesero[0] }}"
+                    {% if mesero[0] == row[4] %}selected{% endif %}>
+                      {{ mesero[1] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_mesa" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
+                <select name="id_mesa" class="border rounded px-3 py-2 w-40" required>
+                  {% for mesa in mesas %}
+                    <option value="{{ mesa[0] }}"
+                    {% if mesa[0] == row[5] %}selected{% endif %}>
+                      {{ mesa[0] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_medio_pago" value="{{ row[6] }}" class="border rounded px-2 py-1 w-40">
+                <select name="id_medio_pago" class="border rounded px-3 py-2 w-40" required>
+                  {% for medio in medios %}
+                    <option value="{{ medio[0] }}"
+                    {% if medio[0] == row[6] %}selected{% endif %}>
+                      {{ medio[1] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2 flex gap-2">
                 <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded w-24">Update</button>
             </form>
             {% elif action == "eliminar" %}
               <td class="py-2 px-2 flex-col gap-2">
-                <form action="/delete" method="post" class="inline">
+                <form action="/ventas/delete" method="post" class="inline">
                   <input type="hidden" name="id" value="{{ row[0] }}">
                   <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
                 </form>
@@ -96,7 +117,7 @@
 
       {% if action == "add" %}
       <h2 class="text-xl text-center font-semibold mb-2 text-blue-700">Registrar Nueva Venta</h2>
-      <form action="/create" method="post" class="flex justify-center gap-2 mb-3">
+      <form action="/ventas/create" method="post" class="flex justify-center gap-2 mb-3">
         <div class="flex gap-2">
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Cantidad</label>

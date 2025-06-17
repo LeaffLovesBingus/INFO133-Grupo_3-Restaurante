@@ -52,30 +52,37 @@
             <td class="py-2 px-2">{{ row[4] }}</td>
             <td class="py-2 px-2">{{ row[5] }}</td>
             {% endif %}
-            {% if action == "modificar" %}>
-            <form action="/update" method="post" class="contents">
+            {% if action == "modificar" %}
+            <form action="/reserva/update" method="post" class="contents">
               <input type="hidden" name="id" value="{{ row[0] }}">
               <td class="py-2 px-2">
-                <input type="number" name="id_mesa" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
+                <select name="id_mesa" class="border rounded px-3 py-2 w-40" required>
+                  {% for mesa in mesas %}
+                    <option value="{{ mesa[0] }}"
+                    {% if mesa[0] == row[1] %}selected{% endif %}>
+                      {{ mesa[0] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="estado_reserva" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
+                <input type="text" name="estado_reserva" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
-                <input type="datetime-local" name="fecha_reserva" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
+                <input type="datetime-local" name="fecha_reserva" value="{{ row[3] }}" class="border rounded px-2 py-1 w-64" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="nombre_cliente" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+                <input type="text" name="nombre_cliente" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="telefono_cliente" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
+                <input type="text" name="telefono_cliente" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40" required>
               </td>
               <td class="py-2 px-2 flex gap-2">
                 <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded w-24">Update</button>
             </form>
             {% elif action == "eliminar" %}
             <td class="py-2 px-4 flex flex-col gap-2">
-              <form action="/delete" method="post" class="inline">
+              <form action="/reserva/delete" method="post" class="inline">
                 <input type="hidden" name="id" value="{{ row[0] }}">
                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
               </form>
@@ -90,18 +97,37 @@
       <!-- Seccion Añadir -->
 
       {% if action == "add" %}
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Reserva Mesa</h2>
-      <form action="/create" method="post" class="flex gap-2 mb-4">
-        <select name="id_mesa" class="border rounded px-3 py-2 w-40" required>
-        {% for mesa in mesas %}
-          <option value="{{ mesa[0] }}">{{ mesa[0] }}</option>
-        {% endfor %}
-        </select>          
-        <input type="text" name="estado_reserva" placeholder="Estado Reserva" class="border rounded px-3 py-2 flex-1" required>
-        <input type="datetime-local" name="fecha_reserva" placeholder="Fecha Reserva" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="nombre_cliente" placeholder="Nombre Cliente" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="telefono_cliente" placeholder="Teléfono Cliente" class="border rounded px-3 py-2 flex-1" required>
-        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
+      <h2 class="text-xl text-center font-semibold mb-2 text-blue-700">Registrar Reserva Mesa</h2>
+      <form action="/reserva/create" method="post" class="flex gap-2 mb-4 justify-center">
+        <div class="flex gap-2">
+          <div class="flex flex-col">
+            <label for="id_mesa" class="mb-1 text-sm font-semibold text-gray-700">ID Mesa</label>
+            <select name="id_mesa" class="border rounded px-3 py-2 w-40" required>
+              {% for mesa in mesas %}
+                <option value="{{ mesa[0] }}">{{ mesa[0] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="flex flex-col">
+            <label for="estado_reserva" class="mb-1 text-sm font-semibold text-gray-700">Estado Reserva</label>
+            <input type="text" name="estado_reserva" placeholder="Estado Reserva" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="fecha_reserva" class="mb-1 text-sm font-semibold text-gray-700">Fecha Reserva</label>
+            <input type="datetime-local" name="fecha_reserva" placeholder="Fecha Reserva" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="nombre_cliente" class="mb-1 text-sm font-semibold text-gray-700">Nombre Cliente</label>
+            <input type="text" name="nombre_cliente" placeholder="Nombre Cliente" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col">
+            <label for="telefono_cliente" class="mb-1 text-sm font-semibold text-gray-700">Teléfono Cliente</label>
+            <input type="text" name="telefono_cliente" placeholder="Teléfono Cliente" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col justify-end">
+            <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
+          </div>
+        </div>
       </form>
       {% endif %}
     </div>

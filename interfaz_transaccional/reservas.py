@@ -51,7 +51,7 @@ def create():
     cur.execute(
         '''
         INSERT INTO "reservas" ("FK_id_mesas", "estado_reserva", "fecha_reserva", "nombre_cliente", "telefono_cliente") 
-        VALUES (%s, %s, %s, %s, %s, %s)
+        VALUES (%s, %s, %s, %s, %s)
         ''',
         (id_mesa, estado, fecha, nombre, telefono)
     )
@@ -59,7 +59,7 @@ def create():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect(url_for('reservas_mesas'))
+    return redirect(url_for('reservas', action='add'))
 
 @app.route('/update', methods=['POST'])
 
@@ -97,7 +97,7 @@ def update():
     conn.commit()
     cur.close()
     conn.close()
-    return redirect(url_for('reservas_mesas'))
+    return redirect(url_for('reservas', action='modificar'))
 
 @app.route('/delete', methods=['POST'])
 
@@ -127,7 +127,7 @@ def delete():
     cur.close()
     conn.close()
 
-    return redirect(url_for('reservas_mesas'))
+    return redirect(url_for('reservas', action='eliminar'))
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

@@ -54,29 +54,50 @@
             {% endif %}
             <!-- Seccion Update/Delete -->
             {% if action == "modificar" %}>
-            <form action="/update" method="post" class="contents">
+            <form action="/ingredientes/update" method="post" class="contents">
               <input type="hidden" name="id" value="{{ row[0] }}">
               <td class="py-2 px-2">
-                <input type="text" name="id_consumible" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
+                <select name="id_consumible" class="border rounded px-3 py-2 w-40" required>
+                  {% for consumible in consumibles %}
+                    <option value="{{ consumible[0] }}"
+                    {% if consumible[0] == row[1] %}selected{% endif %}>
+                      {{ consumible[1] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_ingrediente" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
+                <select name="id_ingrediente" class="border rounded px-3 py-2 w-40" required>
+                  {% for ingrediente in ingredientes %}
+                    <option value="{{ ingrediente[0] }}"
+                    {% if ingrediente[0] == row[2] %}selected{% endif %}>
+                      {{ ingrediente[1] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="cantidad" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
+                <input type="number" name="cantidad" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="fecha" value="{{ row[4].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-40">
+                <input type="datetime-local" name="fecha" value="{{ row[4].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-40" required>
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_cocinero" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
+                <select name="id_cocinero" class="border rounded px-3 py-2 w-40" required>
+                  {% for cocinero in cocineros %}
+                    <option value="{{ cocinero[0] }}"
+                    {% if cocinero[0] == row[5] %}selected{% endif %}>
+                      {{ cocinero[1] }}
+                    </option>
+                  {% endfor %}
+                </select>
               </td>
               <td class="py-2 px-2 flex gap-2">
                 <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded w-24">Update</button>
             </form>
             {% elif action == "eliminar" %}
             <td class="py-2 px-4 flex flex-col gap-2">
-              <form action="/delete" method="post" class="inline">
+              <form action="/ingredientes/delete" method="post" class="inline">
                 <input type="hidden" name="id" value="{{ row[0] }}">
                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
               </form>
@@ -87,12 +108,12 @@
         </tbody>
       </table>
       {% endif %}
-      
+
       <!-- Seccion Añadir -->
 
       {% if action == "add" %}
       <h2 class="text-xl text-center mb-2 text-blue-700">Registrar Nuevo Uso Ingrediente</h2>
-      <form action="/create" method="post" class="flex justify-center gap-2 mb-4">
+      <form action="/ingredientes/create" method="post" class="flex justify-center gap-2 mb-4">
         <div class="flex gap-2">
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Consumible</label>
