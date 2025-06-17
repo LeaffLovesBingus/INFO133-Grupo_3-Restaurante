@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 import psycopg2
 from medio_pago import create as create_medio_pago, update as update_medio_pago, delete as delete_medio_pago
+from reservas import create as create_reserva, update as update_reserva, delete as delete_reserva
 
 app = Flask(__name__)
 
@@ -172,6 +173,18 @@ def update_medio_pago_route():
 def delete_medio_pago_route():
     return delete_medio_pago()
 
+
+@app.route('/reserva/create', methods=['POST'])
+def create_reserva_route():
+    return create_reserva()
+
+@app.route('/reserva/update', methods=['POST'])
+def update_reserva_route():
+    return update_reserva()
+
+@app.route('/reserva/delete', methods=['POST'])
+def delete_reserva_route():
+    return delete_reserva()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
