@@ -2,41 +2,40 @@
 {% block title %}Medio Pago CRUD Test{% endblock %}
 
 {% block navbar %}
-  <nav class="bg-blue-700 px-4 py-2 shadow-lg sticky top-0 z-50 mb-8 overflow-x-auto">
-      <ul class="flex gap-2 whitespace-nowrap">
-          <li>
-              <a href="/" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Volver al Inicio</a>
-          </li>
-          <li>
-              <a href="/ventas/listar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Listar Ventas</a>
-          </li>
-          <li>
-              <a href="/ventas/modificar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Modificar Ventas</a>
-          </li>
-          <li>
-              <a href="/ventas/eliminar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Eliminar Ventas</a>
-          </li>
-          <li>
-              <a href="/ventas/add" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Añadir Ventas</a>
-          </li>
-      </ul>
-  </nav>  
+    <nav class="bg-blue-700 px-4 py-2 shadow-lg sticky top-0 z-50 mb-8 overflow-x-auto">
+        <ul class="flex gap-2 whitespace-nowrap">
+            <li>
+                <a href="/" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Volver al Inicio</a>
+            </li>
+            <li>
+                <a href="/reservas/listar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Listar Reservas Mesas</a>
+            </li>
+            <li>
+                <a href="/reservas/modificar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Modificar Reservas Mesas</a>
+            </li>
+            <li>
+                <a href="/reservas/eliminar" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Eliminar Reservas Mesas</a>
+            </li>
+            <li>
+                <a href="/reservas/add" class="text-white font-semibold hover:bg-blue-800 px-6 py-2 rounded-md transition">Añadir Reservas Mesas</a>
+            </li>
+        </ul>
+    </nav>  
 {% endblock %}
 
 {% block content %}
     <div class=" overflow-x-auto p-6">
-      <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">CRUD TEST Ventas</h1>
+      <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">CRUD TEST Reservas</h1>
       {% if action in ["listar", "modificar", "eliminar"] %}
       <table class="min-w-full bg-white rounded-lg shadow overflow-hidden mb-8">
         <thead class="bg-blue-700 text-white">
           <tr>
             <th class="py-3 px-4 text-left">ID</th>
-            <th class="py-3 px-4 text-left">Cantidad Productos</th>
-            <th class="py-3 px-4 text-left">Monto Total</th>
-            <th class="py-3 px-4 text-left">Fecha Venta</th>
-            <th class="py-3 px-4 text-left">ID Mesero</th>
             <th class="py-3 px-4 text-left">ID Mesa</th>
-            <th class="py-3 px-4 text-left">ID Medio Pago</th>
+            <th class="py-3 px-4 text-left">Estado Reserva</th>
+            <th class="py-3 px-4 text-left">Fecha Reserva</th>
+            <th class="py-3 px-4 text-left">Nombre Cliente</th>
+            <th class="py-3 px-4 text-left">Teléfono Cliente</th>
             {% if action in ["modificar", "eliminar"] %}
             <th class="py-3 px-4 text-left">Acciones</th>
             {% endif %}
@@ -49,42 +48,38 @@
             {% if action in ["listar", "eliminar"] %}
             <td class="py-2 px-2">{{ row[1] }}</td>
             <td class="py-2 px-2">{{ row[2] }}</td>
-            <td class="py-2 px-2">{{ row[3].strftime('%Y-%m-%d %H:%M') }}</td>
+            <td class="py-2 px-2">{{ row[3] }}</td>
             <td class="py-2 px-2">{{ row[4] }}</td>
             <td class="py-2 px-2">{{ row[5] }}</td>
-            <td class="py-2 px-2">{{ row[6] }}</td>
             {% endif %}
-            {% if action == "modificar" %}
+            {% if action == "modificar" %}>
             <form action="/update" method="post" class="contents">
               <input type="hidden" name="id" value="{{ row[0] }}">
               <td class="py-2 px-2">
-                <input type="text" name="cantidad_productos" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
+                <input type="number" name="id_mesa" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20">
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="cantidad_clientes" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
+                <input type="text" name="estado_reserva" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20">
               </td>
               <td class="py-2 px-2">
-                <input type="datetime-local" name="fecha_venta" value="{{ row[3].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64">
+                <input type="datetime-local" name="fecha_reserva" value="{{ row[3] }}" class="border rounded px-2 py-1 w-20">
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_mesero" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
+                <input type="text" name="nobmre_cliente" value="{{ row[4] }}" class="border rounded px-2 py-1 w-40">
               </td>
               <td class="py-2 px-2">
-                <input type="text" name="id_mesa" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
-              </td>
-              <td class="py-2 px-2">
-                <input type="text" name="id_medio_pago" value="{{ row[6] }}" class="border rounded px-2 py-1 w-40">
+                <input type="text" name="telefono_cliente" value="{{ row[5] }}" class="border rounded px-2 py-1 w-40">
               </td>
               <td class="py-2 px-2 flex gap-2">
                 <button type="submit" class="bg-yellow-400 hover:bg-yellow-500 text-white px-3 py-1 rounded w-24">Update</button>
             </form>
             {% elif action == "eliminar" %}
-              <td class="py-2 px-2 flex-col gap-2">
-                <form action="/delete" method="post" class="inline">
-                  <input type="hidden" name="id" value="{{ row[0] }}">
-                  <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
-                </form>
-              </td>
+            <td class="py-2 px-4 flex flex-col gap-2">
+              <form action="/delete" method="post" class="inline">
+                <input type="hidden" name="id" value="{{ row[0] }}">
+                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded w-24">Delete</button>
+              </form>
+            </td>
             {% endif %}
           </tr>
           {% endfor %}
@@ -92,19 +87,18 @@
       </table>
       {% endif %}
       {% if action == "add" %}
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Nueva Venta</h2>
-      <form action="/create" method="post" class="flex gap-2 mb-3">
-        <input type="text" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
-        <input type="text" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2 w-40" required>
-        <input type="datetime-local" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2 w-64" required>
-        <input type="text" name="id_mesero" placeholder="ID Mesero" class="border rounded px-3 py-2 w-40" required>
-        <input type="text" name="id_mesa" placeholder="ID Mesa" class="border rounded px-3 py-2 w-24" required>
-        <input type="text" name="id_medio_pago" placeholder="ID Medio Pago" class="border rounded px-3 py-2 w-24" required>
-        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded cursor-pointer w-24">
+      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Reserva Mesa</h2>
+      <form action="/create" method="post" class="flex gap-2 mb-4">
+        <input type="text" name="id_mesa" placeholder="ID Mesa" class="border rounded px-3 py-2 flex-1" required>
+        <input type="text" name="estado_reserva" placeholder="Estado Reserva" class="border rounded px-3 py-2 flex-1" required>
+        <input type="datetime-local" name="fecha_reserva" placeholder="Fecha Reserva" class="border rounded px-3 py-2 flex-1" required>
+        <input type="text" name="nobmre_cliente" placeholder="Nombre Cliente" class="border rounded px-3 py-2 flex-1" required>
+        <input type="text" name="telefono_cliente" placeholder="Teléfono Cliente" class="border rounded px-3 py-2 flex-1" required>
+        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
       </form>
       {% endif %}
     </div>
-  <!-- Contenedor Notificaciones -->
+    <!-- Contenedor Notificaciones -->
     <div class="flex flex-col-reverse h-screen bottom-4 items-end py-5 px-5">
       <div class="flex flex-col-reverse sticky gap-y-3 bottom-4">
         <!-- Notificacion Información -->

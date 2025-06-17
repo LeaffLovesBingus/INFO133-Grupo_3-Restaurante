@@ -1,4 +1,3 @@
-
 let intervalId = {};
 
 //Función para mostrar la notificación
@@ -103,3 +102,12 @@ let esconder = function(id) {
   barra.style.width = "100%";
 
 }
+
+// Mostrar notificación después de recarga si el flag está en localStorage
+window.addEventListener('DOMContentLoaded', function() {
+  const notif = localStorage.getItem('showNotif');
+  if (notif) {
+    showTime(notif);
+    localStorage.removeItem('showNotif');
+  }
+});

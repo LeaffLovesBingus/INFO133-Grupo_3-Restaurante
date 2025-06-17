@@ -26,8 +26,5 @@
 {% block content %}{% endblock %}
 
 </body>
-<!-- Inject JS -->
-
-<script src="assets/js/inyect/notificacion.js"></script>
-
+<script src="{{ url_for('static', filename='js/notificacion.js') }}"></script>
 </html>

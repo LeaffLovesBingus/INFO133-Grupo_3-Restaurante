@@ -4,8 +4,8 @@ from flask import Flask, render_template, request, redirect, url_for
 def create():
     conn = psycopg2.connect(
         host="localhost",
-        database="sistema_restaurante",
-        user="usuario_restaurante",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
         password="1234"
     )
     cur = conn.cursor()
@@ -22,8 +22,8 @@ def create():
 def update():
     conn = psycopg2.connect(
         host="localhost",
-        database="sistema_restaurante",
-        user="usuario_restaurante",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
         password="1234"
     )
     cur = conn.cursor()
@@ -40,10 +40,10 @@ def update():
 
 def delete():
     conn = psycopg2.connect(
-    host="localhost",
-    database="sistema_restaurante",
-    user="usuario_restaurante",
-    password="1234"
+        host="localhost",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
+        password="1234"
     )
 
     cur = conn.cursor()
