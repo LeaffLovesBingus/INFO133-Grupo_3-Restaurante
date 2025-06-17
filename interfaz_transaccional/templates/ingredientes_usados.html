@@ -52,6 +52,7 @@
             <td class="py-2 px-2">{{ row[4].strftime('%Y-%m-%d %H:%M') }}</td>
             <td class="py-2 px-2">{{ row[5] }}</td>
             {% endif %}
+            <!-- Seccion Update/Delete -->
             {% if action == "modificar" %}>
             <form action="/update" method="post" class="contents">
               <input type="hidden" name="id" value="{{ row[0] }}">
@@ -86,15 +87,49 @@
         </tbody>
       </table>
       {% endif %}
+      
+      <!-- Seccion Añadir -->
+
       {% if action == "add" %}
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Nuevo Uso Ingrediente</h2>
-      <form action="/create" method="post" class="flex gap-2 mb-4">
-        <input type="text" name="id_consumible" placeholder="ID Consumible" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="id_ingrediente" placeholder="ID Ingrediente" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="cantidad" placeholder="Cantidad" class="border rounded px-3 py-2 flex-1" required>
-        <input type="datetime-local" name="fecha" placeholder="Fecha" class="border rounded px-3 py-2 flex-1" required>
-        <input type="text" name="id_cocinero" placeholder="ID Cocinero" class="border rounded px-3 py-2 flex-1" required>
-        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer">
+      <h2 class="text-xl text-center mb-2 text-blue-700">Registrar Nuevo Uso Ingrediente</h2>
+      <form action="/create" method="post" class="flex justify-center gap-2 mb-4">
+        <div class="flex gap-2">
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Consumible</label>
+            <select name="id_consumible" class="border rounded px-3 py-2 w-64" required>
+            {% for consumible in consumibles %}
+              <option value="{{ consumible[0] }}">{{ consumible[1] }}</option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Ingrediente</label>
+            <select name="id_ingrediente" class="border rounded px-3 py-2 w-40" required>
+            {% for ingrediente in ingredientes %}
+              <option value="{{ ingrediente[0] }}">{{ ingrediente[1] }}</option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Cantidad</label>
+            <input type="number" name="cantidad" placeholder="Cantidad" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Fecha y hora</label>
+            <input type="datetime-local" name="fecha" placeholder="Fecha" class="border rounded px-3 py-2 flex-1" required>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Cocinero</label>
+            <select name="id_cocinero" class="border rounded px-3 py-2 w-40" required>
+            {% for cocinero in cocineros %}
+              <option value="{{ cocinero[0] }}">{{ cocinero[1] }}</option>
+            {% endfor %}
+            </select>
+          </div>
+          <div class="flex flex-col justify-end">
+            <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded cursor-pointer mt-6">
+          </div>
+        </div>
       </form>
       {% endif %}
     </div>

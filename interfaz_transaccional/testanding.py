@@ -36,11 +36,15 @@ def reservas(action):
         for row in data
     ]
 
+    cur.execute('''SELECT * FROM "Mesas"''')
+    mesas = cur.fetchall()
+
     # close the cursor and connection
     cur.close()
     conn.close()
 
-    return render_template(template_name_or_list='reservas_mesas.html', data=data, action=action)
+    return render_template(template_name_or_list='reservas_mesas.html', data=data, 
+                           action=action, mesas=mesas)
 
 @app.route("/ventas/<string:accion>")
 
@@ -68,16 +72,27 @@ def ventas(accion):
         for row in data
     ]
 
+    cur.execute('''SELECT * FROM "Medio_Pago"''')
+    medios_pago = cur.fetchall()
+
+    cur.execute('''SELECT * FROM "Mesas"''')
+    mesas = cur.fetchall()
+
+    cur.execute('''SELECT m."Id_mesero", e."Nombre" FROM "Mesero" m
+                 JOIN "Empleados" e ON m."Id_mesero" = e."Id_empleado"''')
+    meseros = cur.fetchall()
+
     # close the cursor and connection
     cur.close()
     conn.close()
 
-    return render_template('ventas_realizadas.html', data=data, action=accion)
+    return render_template('ventas_realizadas.html', data=data,
+                            action=accion, medios_pago=medios_pago,
+                            meseros=meseros, mesas=mesas)
 
 @app.route("/ingredientes/<string:accion>")
 
 def ingredientes(accion):
-    # Connect to the database
     # Connect to the database
     conn = psycopg2.connect(
         host="localhost",
@@ -101,11 +116,23 @@ def ingredientes(accion):
         for row in data
     ]
 
+    cur.execute('''SELECT * FROM "Ingredientes"''')
+    ingredientes = cur.fetchall()
+
+    cur.execute('''SELECT * FROM "Consumibles"''')
+    consumibles = cur.fetchall()
+
+    cur.execute('''SELECT c."Id_cocinero", e."Nombre" FROM "Cocinero" c
+                 JOIN "Empleados" e ON c."Id_cocinero" = e."Id_empleado"''')
+    cocineros = cur.fetchall()
+
     # close the cursor and connection
     cur.close()
     conn.close()
 
-    return render_template('ingredientes_usados.html', data=data, action=accion)
+    return render_template('ingredientes_usados.html', data=data, 
+                           action=accion, ingredientes=ingredientes,
+                           consumibles=consumibles, cocineros=cocineros)
 
 @app.route('/medio_pago/<string:action>')
 
@@ -122,10 +149,8 @@ def medio_pago(action):
     # create a cursor
     cur = conn.cursor()
 
-    # Select all products from the table
     cur.execute('''SELECT * FROM "Medio_Pago"''')
 
-    # Fetch the data
     data = cur.fetchall()
 
     # close the cursor and connection

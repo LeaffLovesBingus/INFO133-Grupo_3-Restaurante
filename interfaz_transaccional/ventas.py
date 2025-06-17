@@ -21,8 +21,12 @@ def index():
     # Select all products from the table
     cur.execute('''SELECT * FROM "Hechos_Ventas"''')
 
-    # Fetch the data
     data = cur.fetchall()
+
+    cur.execute('''SELECT * FROM "Medio_Pago"''')
+
+    medios_pago = cur.fetchall()
+    
 
     data = [
         row[:4] + (datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S"),) + row[5:]
@@ -34,7 +38,7 @@ def index():
     cur.close()
     conn.close()
 
-    return render_template('ventas.html', data=data)
+    return render_template('ventas.html', data=data, medios_pago=medios_pago)
 
 @app.route('/create', methods=['POST'])
 

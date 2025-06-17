@@ -91,20 +91,57 @@
         </tbody>
       </table>
       {% endif %}
+
+      <!-- Seccion Añadir -->
+
       {% if action == "add" %}
-      <h2 class="text-xl font-semibold mb-2 text-blue-700">Registrar Nueva Venta</h2>
-      <form action="/create" method="post" class="flex gap-2 mb-3">
-        <input type="text" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
-        <input type="text" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2 w-40" required>
-        <input type="datetime-local" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2 w-64" required>
-        <input type="text" name="id_mesero" placeholder="ID Mesero" class="border rounded px-3 py-2 w-40" required>
-        <input type="text" name="id_mesa" placeholder="ID Mesa" class="border rounded px-3 py-2 w-24" required>
-        <input type="text" name="id_medio_pago" placeholder="ID Medio Pago" class="border rounded px-3 py-2 w-24" required>
-        <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded cursor-pointer w-24">
+      <h2 class="text-xl text-center font-semibold mb-2 text-blue-700">Registrar Nueva Venta</h2>
+      <form action="/create" method="post" class="flex justify-center gap-2 mb-3">
+        <div class="flex gap-2">
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Cantidad</label>
+            <input type="number" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Monto Total</label>
+            <input type="number" name="cantidad_clientes" placeholder="Cantidad Clientes" class="border rounded px-3 py-2" required>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">Fecha Venta</label>
+            <input type="datetime-local" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2" required>
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">ID Mesero</label>
+            <select name="id_mesero" class="border rounded px-3 py-2 w-40" required>
+            {% for mesero in meseros %}
+              <option value="{{ mesero[0] }}">{{ mesero[1] }}</option>
+            {% endfor %}
+            </select>            
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">ID Mesa</label>
+            <select name="id_mesa" class="border rounded px-3 py-2 w-40" required>
+              {% for mesa in mesas %}
+              <option value="{{ mesa[0] }}">{{ mesa[0] }}</option>
+              {% endfor %}
+            </select>          
+          </div>
+          <div class="flex flex-col">
+            <label class="mb-1 text-sm font-semibold text-gray-700">ID Medio Pago</label>
+            <select name="id_medio_pago" class="border rounded px-3 py-2 w-40" required>
+              {% for medio in medios_pago %}
+              <option value="{{ medio[0] }}">{{ medio[1] }}</option>
+              {% endfor %}
+            </select>          
+          </div>
+          <div class="flex flex-col justify-end">
+            <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded cursor-pointer w-24">
+          </div>      
+        </div>
       </form>
-      {% endif %}
+        {% endif %}
     </div>
-  <!-- Contenedor Notificaciones -->
+      <!-- Contenedor Notificaciones -->
     <div class="flex flex-col-reverse h-screen bottom-4 items-end py-5 px-5">
       <div class="flex flex-col-reverse sticky gap-y-3 bottom-4">
         <!-- Notificacion Información -->
