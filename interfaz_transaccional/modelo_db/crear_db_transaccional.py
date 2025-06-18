@@ -1,6 +1,7 @@
 import psycopg2
 from getpass import getpass
 from datos_random_transaccional import generar_datos
+from generar_datos_crud import generarDatosCRUD
 
 
 def crear_sistema_restaurantes():
@@ -113,3 +114,4 @@ if __name__ == "__main__":
         print(f"# Fallo de conexión\nDetalle: {e}")
 
     generar_datos()
+    generarDatosCRUD()
