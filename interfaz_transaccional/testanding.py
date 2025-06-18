@@ -3,6 +3,8 @@ from datetime import datetime
 import psycopg2
 from medio_pago import create as create_medio_pago, update as update_medio_pago, delete as delete_medio_pago
 from reservas import create as create_reserva, update as update_reserva, delete as delete_reserva
+from ventas import create as create_ventas, update as update_ventas, delete as delete_ventas
+from ingredientes import create as create_ingredientes, update as update_ingredientes, delete as delete_ingredientes
 
 app = Flask(__name__)
 
@@ -160,7 +162,7 @@ def medio_pago(action):
 
     return render_template(template_name_or_list='medio_pago.html', data=data, action=action)
 
-
+# Medio de pago
 @app.route('/medio_pago/create', methods=['POST'])
 def create_medio_pago_route():
     return create_medio_pago()
@@ -173,7 +175,7 @@ def update_medio_pago_route():
 def delete_medio_pago_route():
     return delete_medio_pago()
 
-
+# Reservas
 @app.route('/reserva/create', methods=['POST'])
 def create_reserva_route():
     return create_reserva()
@@ -185,6 +187,32 @@ def update_reserva_route():
 @app.route('/reserva/delete', methods=['POST'])
 def delete_reserva_route():
     return delete_reserva()
+
+# Ventas
+@app.route('/ventas/create', methods=['POST'])
+def create_ventas_route():
+    return create_ventas()
+
+@app.route('/ventas/update', methods=['POST'])
+def update_ventas_route():
+    return update_ventas()
+
+@app.route('/ventas/delete', methods=['POST'])
+def delete_ventas_route():
+    return delete_ventas()
+
+# Ingredientes
+@app.route('/ingredientes/create', methods=['POST'])
+def create_ingredientes_route():
+    return create_ingredientes()
+
+@app.route('/ingredientes/update', methods=['POST'])
+def update_ingredientes_route():
+    return update_ingredientes()
+
+@app.route('/ingredientes/delete', methods=['POST'])
+def delete_ingredientes_route():
+    return delete_ingredientes()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

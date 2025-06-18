@@ -61,7 +61,7 @@
                 <input type="number" name="cantidad_productos" value="{{ row[1] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
-                <input type="number" name="cantidad_clientes" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20" required>
+                <input type="number" name="monto_total" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
                 <input type="datetime-local" name="fecha_venta" value="{{ row[3].strftime('%Y-%m-%d %H:%M') }}" class="border rounded px-2 py-1 w-64" required>
@@ -125,14 +125,14 @@
           </div>
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Monto Total</label>
-            <input type="number" name="cantidad_clientes" placeholder="Cantidad Clientes" class="border rounded px-3 py-2" required>
+            <input type="number" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2" required>
           </div>
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Fecha Venta</label>
             <input type="datetime-local" name="fecha_venta" placeholder="Fecha" class="border rounded px-3 py-2" required>
           </div>
           <div class="flex flex-col">
-            <label class="mb-1 text-sm font-semibold text-gray-700">ID Mesero</label>
+            <label class="mb-1 text-sm font-semibold text-gray-700">Mesero</label>
             <select name="id_mesero" class="border rounded px-3 py-2 w-40" required>
             {% for mesero in meseros %}
               <option value="{{ mesero[0] }}">{{ mesero[1] }}</option>
