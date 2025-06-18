@@ -66,6 +66,13 @@
                 </select>
               </td>
               <td class="py-2 px-2">
+                <select name="estado_reserva" class="border rounded px-3 py-2 w-40" required>
+                  {% for reserva in ["confirmada","pendiente", "cancelada"] %}
+                    <option value="{{ reserva }}">
+                      {{ reserva }}
+                    </option>
+                  {% endfor %}
+                </select>
                 <input type="text" name="estado_reserva" value="{{ row[2] }}" class="border rounded px-2 py-1 w-20" required>
               </td>
               <td class="py-2 px-2">
@@ -110,7 +117,13 @@
           </div>
           <div class="flex flex-col">
             <label for="estado_reserva" class="mb-1 text-sm font-semibold text-gray-700">Estado Reserva</label>
-            <input type="text" name="estado_reserva" placeholder="Estado Reserva" class="border rounded px-3 py-2 flex-1" required>
+            <select name="estado_reserva" class="border rounded px-3 py-2 w-40" required>
+              {% for reserva in ["confirmada","pendiente", "cancelada"] %}
+                <option value="{{ reserva }}">
+                  {{ reserva }}
+                </option>
+              {% endfor %}
+            </select>
           </div>
           <div class="flex flex-col">
             <label for="fecha_reserva" class="mb-1 text-sm font-semibold text-gray-700">Fecha Reserva</label>
