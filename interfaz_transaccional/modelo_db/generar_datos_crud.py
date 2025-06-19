@@ -3,32 +3,12 @@ from faker import Faker
 import random
 from datetime import datetime
 
-def generarDatosCRUD():
-    global conn_dr
-    global cur_dr
-    
-    conn_dr = psycopg2.connect(
-        host="localhost",
-        database="sistema_restaurante_transaccional",
-        user="usuario_restaurante_transaccional",
-        password="1234"
-    )
-    cur_dr = conn_dr.cursor()
-
-
-
-    conn_dr.commit()
-    cur_dr.close()
-    conn_dr.close()
-
-
 fake = Faker('es_CL')
 
 
-
-def obtener_ids(tabla, campo): #chatgpt me corrigio esto, funcionaba sin eso pero asi se ve mas claro
-    cur_dr.execute(f'SELECT "{campo}" FROM "{tabla}"')
-    return [row[0] for row in cur_dr.fetchall()]
+def obtener_ids(cur, tabla, campo):
+    cur.execute(f'SELECT "{campo}" FROM "{tabla}"')
+    return [row[0] for row in cur.fetchall()]
 
 
 ingredientes_por_consumible = {
@@ -39,18 +19,22 @@ ingredientes_por_consumible = {
     'Pan con queso': {'Pan': 1, 'Queso': 1}
 }
 
-def generarVentas(n): #incluye ingredientes usados
-    meseros = obtener_ids("Mesero", "Id_mesero")
-    mesas = obtener_ids("Mesas", "Id_Mesa")
-    medios_pago = obtener_ids("Medio_Pago", "Id_Medio_Pago")
+
+def generarVentas(cur, n):
+    meseros = obtener_ids(cur, "Mesero", "Id_mesero")
+    mesas = obtener_ids(cur, "Mesas", "Id_Mesa")
+    medios_pago = obtener_ids(cur, "Medio_Pago", "Id_Medio_Pago")
+
     consumibles = {}
-    cur_dr.execute('SELECT "Id_consumibles", "Nombre", "Precio_unidad" FROM "Consumibles"')
-    for row in cur_dr.fetchall():
+    cur.execute('SELECT "Id_consumibles", "Nombre", "Precio_unidad" FROM "Consumibles"')
+    for row in cur.fetchall():
         consumibles[row[0]] = {'nombre': row[1], 'precio': row[2]}
-    cocineros = obtener_ids("Cocinero", "Id_cocinero")
+
+    cocineros = obtener_ids(cur, "Cocinero", "Id_cocinero")
+
     ingredientes_map = {}
-    cur_dr.execute('SELECT "Id_ingrediente", "Nombre" FROM "Ingredientes"')
-    for row in cur_dr.fetchall():
+    cur.execute('SELECT "Id_ingrediente", "Nombre" FROM "Ingredientes"')
+    for row in cur.fetchall():
         ingredientes_map[row[1]] = row[0]
 
     for _ in range(n):
@@ -67,21 +51,20 @@ def generarVentas(n): #incluye ingredientes usados
             cantidad_total += cantidad
             total_monto += info['precio'] * cantidad
 
-        cur_dr.execute("""
+        cur.execute("""
             INSERT INTO "Ventas" (
                 "Cantidad_Productos", "Monto_Total", "Fecha_Venta", "FK_Id_Mesero", "FK_Id_Mesa", "FK_Id_Medio_Pago"
             ) VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING "Id_Venta"
         """, (cantidad_total, total_monto, fecha_venta, id_mesero, id_mesa, id_medio))
-        id_venta = cur_dr.fetchone()[0]
+        id_venta = cur.fetchone()[0]
 
         for id, info in productos_vendidos:
             cantidad = random.randint(1, 3)
-            cur_dr.execute("""
+            cur.execute("""
                 INSERT INTO "Consumibles_Vendidos" ("FK_Id_Venta", "FK_Id_Consumible", "Cantidad")
                 VALUES (%s, %s, %s)
             """, (id_venta, id, cantidad))
-
 
             nombre = info['nombre']
             if nombre in ingredientes_por_consumible:
@@ -90,28 +73,42 @@ def generarVentas(n): #incluye ingredientes usados
                         id_ing = ingredientes_map[ing_nombre]
                         id_cocinero = random.choice(cocineros)
                         total_ingrediente = cant_unidad * cantidad
-                        cur_dr.execute("""
+                        cur.execute("""
                             INSERT INTO "Ingredientes_Usados" 
                             ("FK_Id_consumible", "FK_Id_ingrediente", "Cantidad", "Fecha_uso", "FK_Id_cocinero")
                             VALUES (%s, %s, %s, %s, %s)
                         """, (id, id_ing, total_ingrediente, fecha_venta, id_cocinero))
 
-def generarReservas(n):
-    mesas = obtener_ids("Mesas", "Id_Mesa")
-    estados = ["confirmada","pendiente", "cancelada"]
+
+def generarReservas(cur, n):
+    mesas = obtener_ids(cur, "Mesas", "Id_Mesa")
+    estados = ["confirmada", "pendiente", "cancelada"]
     for _ in range(n):
         id_mesa = random.choice(mesas)
         fecha_reserva = fake.date_time_between(start_date='-1y', end_date='+30d')
-        fecha_reserva = fecha_reserva.replace(microsecond=0) #por alguna razon solo en reservas se generaban las fechas con microsegundos, en teoria esto los saca
+        fecha_reserva = fecha_reserva.replace(microsecond=0)
         nombre = fake.name()
         telefono = fake.phone_number()
         estado = random.choice(estados)
-        cur_dr.execute("""
+        cur.execute("""
             INSERT INTO "reservas" 
             ("FK_id_mesas", "estado_reserva", "fecha_reserva", "nombre_cliente", "telefono_cliente")
             VALUES (%s, %s, %s, %s, %s)
         """, (id_mesa, estado, fecha_reserva, nombre, telefono))
 
 
+if __name__ == "__main__":
+    conn = psycopg2.connect(
+        host="localhost",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
+        password="1234"
+    )
+    cur = conn.cursor()
 
+    generarVentas(cur, 100)
+    generarReservas(cur, 30)
 
+    conn.commit()
+    cur.close()
+    conn.close()
