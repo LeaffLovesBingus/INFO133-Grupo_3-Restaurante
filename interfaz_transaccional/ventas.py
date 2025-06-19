@@ -102,7 +102,7 @@ def update():
             "FK_Id_Mesero" = %s, 
             "FK_Id_Mesa" = %s, 
             "FK_Id_Medio_Pago" = %s
-        WHERE Id_Venta = %s
+        WHERE "Id_Venta" = %s
         ''',
         (cantidad_productos, monto_total, fecha_venta, id_mesero, id_mesa, id_medio_pago, id_venta)
     )
