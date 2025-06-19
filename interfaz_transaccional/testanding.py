@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from datetime import datetime
 import psycopg2
-from medio_pago import create as create_medio_pago, update as update_medio_pago, delete as delete_medio_pago
 from reservas import create as create_reserva, update as update_reserva, delete as delete_reserva
 from ventas import create as create_ventas, update as update_ventas, delete as delete_ventas
 from ingredientes import create as create_ingredientes, update as update_ingredientes, delete as delete_ingredientes
@@ -25,11 +24,23 @@ def reservas(action):
         password="1234"
     )
 
+    year = request.args.get('year')
+    mes = request.args.get('mes')
+
+    # Valores por defecto si no hay filtro
+    if not year:
+        year = "2025"
+    if not mes:
+        mes = "6"
+
     # create a cursor
     cur = conn.cursor()
 
     # Select all products from the table
-    cur.execute('''SELECT * FROM "reservas"''')
+    cur.execute(f'''SELECT * FROM "reservas" WHERE 
+                EXTRACT(YEAR FROM "fecha_reserva") = {year} AND 
+                EXTRACT(MONTH FROM "fecha_reserva") = {mes}
+                ORDER BY "fecha_reserva" ASC''')
 
     # Fetch the data
     data = cur.fetchall()
@@ -39,6 +50,15 @@ def reservas(action):
         for row in data
     ]
 
+    cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "fecha_reserva") FROM "reservas" ORDER BY 1 DESC')
+
+    years = [str(int(row[0])) for row in cur.fetchall()]
+    meses = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
+    ]
+
     cur.execute('''SELECT * FROM "Mesas"''')
     mesas = cur.fetchall()
 
@@ -46,8 +66,15 @@ def reservas(action):
     cur.close()
     conn.close()
 
-    return render_template(template_name_or_list='reservas_mesas.html', data=data, 
-                           action=action, mesas=mesas)
+    return render_template(
+        template_name_or_list='reservas_mesas.html', 
+        data=data, 
+        action=action, 
+        mesas=mesas,
+        years=years,
+        meses=meses,
+        year_actual=year,
+        mes_actual=mes)
 
 @app.route("/ventas/<string:accion>")
 
@@ -60,11 +87,23 @@ def ventas(accion):
         password="1234"
     )
 
+    year = request.args.get('year')
+    mes = request.args.get('mes')
+
+    # Valores por defecto si no hay filtro
+    if not year:
+        year = "2025"
+    if not mes:
+        mes = "6"
+
     # create a cursor
     cur = conn.cursor()
 
     # Select all products from the table
-    cur.execute('''SELECT * FROM "Ventas"''')
+    cur.execute(f'''SELECT * FROM "Ventas" WHERE 
+                EXTRACT(YEAR FROM "Fecha_Venta") = {year} AND 
+                EXTRACT(MONTH FROM "Fecha_Venta") = {mes}
+                ORDER BY "Fecha_Venta" ASC''')
 
     # Fetch the data
     data = cur.fetchall()
@@ -74,6 +113,15 @@ def ventas(accion):
         if isinstance(row[3], str) else row
         for row in data
     ]
+    cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "Fecha_Venta") FROM "Ventas" ORDER BY 1 DESC')
+    years = [str(int(row[0])) for row in cur.fetchall()]
+    meses = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
+    ]
+
+    # Obtener los medios de pago, mesas y meseros
 
     cur.execute('''SELECT * FROM "Medio_Pago"''')
     medios_pago = cur.fetchall()
@@ -89,10 +137,18 @@ def ventas(accion):
     cur.close()
     conn.close()
 
-    return render_template('ventas_realizadas.html', data=data,
-                            action=accion, medios_pago=medios_pago,
-                            meseros=meseros, mesas=mesas)
-
+    return render_template(
+        'ventas_realizadas.html',
+        data=data,
+        action=accion,
+        medios_pago=medios_pago,
+        meseros=meseros,
+        mesas=mesas,
+        years=years,
+        meses=meses,
+        year_actual=year,
+        mes_actual=mes
+    )
 @app.route("/ingredientes/<string:accion>")
 
 def ingredientes(accion):
@@ -104,11 +160,24 @@ def ingredientes(accion):
         password="1234"
     )
 
+    year = request.args.get('year')
+    mes = request.args.get('mes')
+
+    # Valores por defecto si no hay filtro
+    if not year:
+        year = "2025"
+    if not mes:
+        mes = "6"
+
+
     # create a cursor
     cur = conn.cursor()
 
     # Select all products from the table
-    cur.execute('''SELECT * FROM "Ingredientes_Usados"''')
+    cur.execute(f'''SELECT * FROM "Ingredientes_Usados" WHERE 
+                EXTRACT(YEAR FROM "Fecha_uso") = {year} AND 
+                EXTRACT(MONTH FROM "Fecha_uso") = {mes}
+                ORDER BY "Fecha_uso" ASC''')
 
     # Fetch the data
     data = cur.fetchall()
@@ -117,6 +186,14 @@ def ingredientes(accion):
         row[:4] + (datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S"),) + row[5:]
         if isinstance(row[4], str) else row
         for row in data
+    ]
+
+    cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "Fecha_uso") FROM "Ingredientes_Usados" ORDER BY 1 DESC')
+    years = [str(int(row[0])) for row in cur.fetchall()]
+    meses = [
+    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
+    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
+    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
     ]
 
     cur.execute('''SELECT * FROM "Ingredientes"''')
@@ -133,47 +210,39 @@ def ingredientes(accion):
     cur.close()
     conn.close()
 
-    return render_template('ingredientes_usados.html', data=data, 
-                           action=accion, ingredientes=ingredientes,
-                           consumibles=consumibles, cocineros=cocineros)
+    return render_template(
+        'ingredientes_usados.html', 
+        data=data, 
+        action=accion, 
+        ingredientes=ingredientes,
+        consumibles=consumibles, 
+        cocineros=cocineros,
+        years=years,
+        meses=meses,
+        year_actual=year,
+        mes_actual=mes
+        )
 
-@app.route('/medio_pago/<string:action>')
+# Limpiar Tablas
+@app.route('/limpiar_tablas', methods=['POST'])
 
-def medio_pago(action):
-
-    # Connect to the database
+def limpiar_tablas():
     conn = psycopg2.connect(
         host="localhost",
         database="sistema_restaurante_transaccional",
         user="usuario_restaurante_transaccional",
         password="1234"
     )
-
-    # create a cursor
     cur = conn.cursor()
-
-    cur.execute('''SELECT * FROM "Medio_Pago"''')
-
-    data = cur.fetchall()
-
-    # close the cursor and connection
+    # Borra primero las tablas hijas (las que tienen FK)
+    cur.execute('DELETE FROM "Consumibles_Vendidos"')
+    cur.execute('DELETE FROM "Ingredientes_Usados"')
+    cur.execute('DELETE FROM "reservas"')
+    cur.execute('DELETE FROM "Ventas"')
+    conn.commit()
     cur.close()
     conn.close()
-
-    return render_template(template_name_or_list='medio_pago.html', data=data, action=action)
-
-# Medio de pago
-@app.route('/medio_pago/create', methods=['POST'])
-def create_medio_pago_route():
-    return create_medio_pago()
-
-@app.route('/medio_pago/update', methods=['POST'])
-def update_medio_pago_route():
-    return update_medio_pago()
-
-@app.route('/medio_pago/delete', methods=['POST'])
-def delete_medio_pago_route():
-    return delete_medio_pago()
+    return redirect(url_for('index'))
 
 # Reservas
 @app.route('/reserva/create', methods=['POST'])

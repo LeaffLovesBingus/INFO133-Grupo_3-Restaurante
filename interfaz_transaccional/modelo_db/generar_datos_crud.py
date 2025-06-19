@@ -112,6 +112,21 @@ def generarReservas(n):
             VALUES (%s, %s, %s, %s, %s)
         """, (id_mesa, estado, fecha_reserva, nombre, telefono))
 
+if __name__ == "__main__":
+    conn_dr = psycopg2.connect(
+        host="localhost",
+        database="sistema_restaurante_transaccional",
+        user="usuario_restaurante_transaccional",
+        password="1234"
+    )
+    cur_dr = conn_dr.cursor()
 
+    generarVentas(100)
+    generarReservas(50)
+
+    # Commit the changes and close the connection
+    conn_dr.commit()
+    cur_dr.close()
+    conn_dr.close()
 
 
