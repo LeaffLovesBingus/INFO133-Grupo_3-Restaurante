@@ -5,6 +5,7 @@ from medio_pago import create as create_medio_pago, update as update_medio_pago,
 from reservas import create as create_reserva, update as update_reserva, delete as delete_reserva
 from ventas import create as create_ventas, update as update_ventas, delete as delete_ventas
 from ingredientes import create as create_ingredientes, update as update_ingredientes, delete as delete_ingredientes
+from carga_datos import carga_datos_bp
 
 app = Flask(__name__)
 
@@ -213,6 +214,8 @@ def update_ingredientes_route():
 @app.route('/ingredientes/delete', methods=['POST'])
 def delete_ingredientes_route():
     return delete_ingredientes()
+
+app.register_blueprint(carga_datos_bp)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
