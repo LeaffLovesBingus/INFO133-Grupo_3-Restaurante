@@ -111,10 +111,10 @@ def generar_datos_masivos():
             generar_reservas(inicio, fin, 500)
             conn.commit()
 
-        return "✅ Datos generados correctamente para 36 meses x 3 tablas."
+        return "🤑 🤑 Datos generados correctamente para 36 meses x 3 tablas."
     except Exception as e:
         conn.rollback()
-        return f"❌ Error al generar datos: {str(e)}"
+        return f"💀 💀 Error al generar datos: {str(e)}"
     finally:
         cur.close()
         conn.close()
