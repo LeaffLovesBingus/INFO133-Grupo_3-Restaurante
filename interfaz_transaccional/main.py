@@ -54,11 +54,16 @@ def reservas(action):
     cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "fecha_reserva") FROM "reservas" ORDER BY 1 DESC')
 
     years = [str(int(row[0])) for row in cur.fetchall()]
-    meses = [
-    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
-    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
-    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
-    ]
+    
+    cur.execute(f'''
+        SELECT DISTINCT EXTRACT(MONTH FROM "fecha_reserva") 
+        FROM "reservas" 
+        WHERE EXTRACT(YEAR FROM "fecha_reserva") = {year}
+        ORDER BY 1
+        ''')
+    
+    meses_raw = cur.fetchall()
+    meses = [(str(int(row[0])), nombre_mes(int(row[0]))) for row in meses_raw]
 
     cur.execute('''SELECT * FROM "Mesas"''')
     mesas = cur.fetchall()
@@ -78,7 +83,6 @@ def reservas(action):
         mes_actual=mes)
 
 @app.route("/ventas/<string:accion>")
-
 def ventas(accion):
     # Connect to the database
     conn = psycopg2.connect(
@@ -90,25 +94,16 @@ def ventas(accion):
 
     year = request.args.get('year')
     mes = request.args.get('mes')
-
-    # Valores por defecto si no hay filtro
     if not year:
         year = "2025"
     if not mes:
         mes = "6"
-
-    # create a cursor
     cur = conn.cursor()
-
-    # Select all products from the table
     cur.execute(f'''SELECT * FROM "Ventas" WHERE 
                 EXTRACT(YEAR FROM "Fecha_Venta") = {year} AND 
                 EXTRACT(MONTH FROM "Fecha_Venta") = {mes}
                 ORDER BY "Fecha_Venta" ASC''')
-
-    # Fetch the data
     data = cur.fetchall()
-
     data = [
         row[:3] + (datetime.strptime(row[3], "%Y-%m-%d %H:%M:%S"),) + row[4:]
         if isinstance(row[3], str) else row
@@ -116,11 +111,14 @@ def ventas(accion):
     ]
     cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "Fecha_Venta") FROM "Ventas" ORDER BY 1 DESC')
     years = [str(int(row[0])) for row in cur.fetchall()]
-    meses = [
-    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
-    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
-    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
-    ]
+    cur.execute(f'''
+        SELECT DISTINCT EXTRACT(MONTH FROM "Fecha_Venta") 
+        FROM "Ventas" 
+        WHERE EXTRACT(YEAR FROM "Fecha_Venta") = {year}
+        ORDER BY 1
+        ''')
+    meses_raw = cur.fetchall()
+    meses = [(str(int(row[0])), nombre_mes(int(row[0]))) for row in meses_raw]
 
     # Obtener los medios de pago, mesas y meseros
 
@@ -163,39 +161,31 @@ def ingredientes(accion):
 
     year = request.args.get('year')
     mes = request.args.get('mes')
-
-    # Valores por defecto si no hay filtro
     if not year:
         year = "2025"
     if not mes:
         mes = "6"
-
-
-    # create a cursor
     cur = conn.cursor()
-
-    # Select all products from the table
     cur.execute(f'''SELECT * FROM "Ingredientes_Usados" WHERE 
                 EXTRACT(YEAR FROM "Fecha_uso") = {year} AND 
                 EXTRACT(MONTH FROM "Fecha_uso") = {mes}
                 ORDER BY "Fecha_uso" ASC''')
-
-    # Fetch the data
     data = cur.fetchall()
-
     data = [
         row[:4] + (datetime.strptime(row[4], "%Y-%m-%d %H:%M:%S"),) + row[5:]
         if isinstance(row[4], str) else row
         for row in data
     ]
-
     cur.execute('SELECT DISTINCT EXTRACT(YEAR FROM "Fecha_uso") FROM "Ingredientes_Usados" ORDER BY 1 DESC')
     years = [str(int(row[0])) for row in cur.fetchall()]
-    meses = [
-    ('1', 'Enero'), ('2', 'Febrero'), ('3', 'Marzo'), ('4', 'Abril'),
-    ('5', 'Mayo'), ('6', 'Junio'), ('7', 'Julio'), ('8', 'Agosto'),
-    ('9', 'Septiembre'), ('10', 'Octubre'), ('11', 'Noviembre'), ('12', 'Diciembre')
-    ]
+    cur.execute(f'''
+        SELECT DISTINCT EXTRACT(MONTH FROM "Fecha_uso") 
+        FROM "Ingredientes_Usados" 
+        WHERE EXTRACT(YEAR FROM "Fecha_uso") = {year}
+        ORDER BY 1
+        ''')
+    meses_raw = cur.fetchall()
+    meses = [(str(int(row[0])), nombre_mes(int(row[0]))) for row in meses_raw]
 
     cur.execute('''SELECT * FROM "Ingredientes"''')
     ingredientes = cur.fetchall()
@@ -285,6 +275,13 @@ def delete_ingredientes_route():
     return delete_ingredientes()
 
 app.register_blueprint(carga_datos_bp)
+
+def nombre_mes(numero):
+    nombres = [
+        '', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ]
+    return nombres[int(numero)]
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)
