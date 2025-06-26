@@ -95,7 +95,7 @@ def transferir_datos():
         conn_estrella.close()
 
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"ETL: Error en rellenar tablas\n> {e}")
         curr_transaccional.close()
         curr_estrella.close()
         conn_transaccional.close()
@@ -127,10 +127,9 @@ def vaciar_tablas():
         for tabla in tablas:
             nombre_tabla = tabla[0]
             try:
-                print(f"Vaciando la tabla {nombre_tabla}")
                 curr_estrella.execute(f"TRUNCATE TABLE \"{nombre_tabla}\" CASCADE;")
             except Exception as e:
-                print(f"No se pudo vaciar la tabla {nombre_tabla}\nDetalle: {e}")
+                print(f"ETL: No se pudo vaciar la tabla {nombre_tabla}\nDetalle: {e}")
 
         conn_estrella.commit()
 
@@ -138,14 +137,14 @@ def vaciar_tablas():
         conn_estrella.close()
 
     except Exception as e:
-        print(f"Error\n{e}")
+        print(f"ETL: Error en vaciar tablas\n> {e}")
         curr_estrella.close()
         conn_estrella.close()
 
 # Testeo
 def main():
     transferir_datos()
-    #vaciar_tablas()
+    vaciar_tablas()
 
 
 if __name__ == "__main__":
