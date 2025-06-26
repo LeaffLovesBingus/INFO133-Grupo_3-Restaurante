@@ -7,6 +7,11 @@ from ventas import create as create_ventas, update as update_ventas, delete as d
 from ingredientes import create as create_ingredientes, update as update_ingredientes, delete as delete_ingredientes
 from carga_datos import carga_datos_bp
 from cargar_analisis import mostrar_graficos, graficos_static
+import threading
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ETL')))
+import scheduler
 
 app = Flask(__name__)
 
@@ -377,4 +382,6 @@ def nombre_mes(numero):
     return nombres[int(numero)]
 
 if __name__ == "__main__":
+    scheduler_thread = threading.Thread(target=scheduler.scheduler, daemon=True)
+    scheduler_thread.start()
     app.run(host="0.0.0.0", port=8000, debug=True)
