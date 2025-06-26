@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Medio Pago CRUD Test{% endblock %}
+{% block title %}Ventas{% endblock %}
 
 {% block navbar %}
   <nav class="bg-blue-700 px-4 py-2 shadow-lg sticky top-0 z-50 mb-8 overflow-x-auto">
@@ -24,13 +24,13 @@
 {% endblock %}
 
 {% block content %}
-    <div class=" overflow-x-auto p-6">
-      <h1 class="text-3xl font-bold text-center text-blue-700 mb-6">CRUD TEST Ventas</h1>
+    <div class=" overflow-x-auto p-3">
+      <h1 class="text-3xl font-bold text-center text-blue-700 mb-2">Ventas</h1>
       <!-- Filtro Año y Mes -->
       {% if action in ["listar", "modificar", "eliminar"] %}
-      <form method="get" class="flex gap-2 mb-4">
+      <form method="get" class="flex gap-2">
         <div class="flex flex-col">
-          <label class="mb-1 text-sm font-semibold text-gray-700">Año</label>
+          <label class="px-4 mb-1 text-sm font-semibold text-gray-700">Año</label>
           <select name="year" class="border rounded px-2 py-1">
             {% for y in years %}
             <option value="{{ y }}" {% if y == year_actual %}selected{% endif %}>{{ y }}</option>
@@ -38,7 +38,7 @@
           </select>
         </div>
         <div class="flex flex-col">
-          <label class="mb-1 text-sm font-semibold text-gray-700">Mes</label>
+          <label class="px-7 mb-1 text-sm font-semibold text-gray-700">Mes</label>
           <select name="mes" class="border rounded px-2 py-1">
             {% for m in meses %}
             <option value="{{ m[0] }}" {% if m[0] == mes_actual %}selected{% endif %}>{{ m[1] }}</option>
@@ -49,6 +49,26 @@
           <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">Filtrar</button>
         </div>
       </form>
+
+        <!-- Controles de paginación -->
+        <div class="flex justify-left py-2 items-center">
+          {% if page > 1 %}
+            <a href="?page={{ page - 1 }}&year={{ year_actual }}&mes={{ mes_actual }}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700">&laquo; Anterior</a>
+          {% endif %}
+          <form method="get" action="" class="inline flex items-center gap-5 px-2">
+            <input type="hidden" name="year" value="{{ year_actual }}">
+            <input type="hidden" name="mes" value="{{ mes_actual }}">
+            <select name="page" onchange="this.form.submit()" class="border rounded px-2 py-1">
+              {% for p in range(1, total_pages + 1) %}
+                <option value="{{ p }}" {% if p == page %}selected{% endif %}>Página {{ p }}</option>
+              {% endfor %}
+            </select>
+          </form>
+          <span class="px-3 py-1 bg-gray-200 rounded">de {{ total_pages }}</span>
+          {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}&year={{ year_actual }}&mes={{ mes_actual }}" class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-700">Siguiente &raquo;</a>
+          {% endif %}
+        </div>
       <!-- Tabla de Ventas -->
       <div class="max-h-[500px] overflow-y-auto rounded-lg shadow mb-8">
         <table class="min-w-full bg-white">
@@ -158,11 +178,11 @@
         <div class="flex gap-2">
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Cantidad</label>
-            <input type="number" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required>
+            <input type="number" name="cantidad_productos" placeholder="Cantidad Productos" class="border rounded px-3 py-2" required readonly>
           </div>
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Monto Total</label>
-            <input type="number" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2" required>
+            <input type="number" name="monto_total" placeholder="Monto Total" class="border rounded px-3 py-2" required readonly>
           </div>
           <div class="flex flex-col">
             <label class="mb-1 text-sm font-semibold text-gray-700">Fecha Venta</label>
@@ -196,8 +216,42 @@
             <input type="submit" value="Create" class="bg-green-500 hover:bg-green-600 text-white px-2 py-2 rounded cursor-pointer w-24">
           </div>      
         </div>
+        <input type="hidden" name="boleta_json" id="boleta-json">
       </form>
-        {% endif %}
+      <!-- Selección de consumibles/ingredientes -->
+      <div class="flex flex-col w-full mt-4">
+        <label class="mb-1 text-sm font-semibold text-gray-700">Agregar Consumible/Ingrediente</label>
+        <div class="flex gap-2">
+          <select id="select-consumible">
+            {% for consumible in consumibles %}
+              <option value="{{ consumible[0] }}" data-precio="{{ consumible[2] }}">{{ consumible[1] }}</option>
+            {% endfor %}
+          </select>
+          <input type="number" id="cantidad-consumible" min="1" value="1" class="border rounded px-3 py-2 w-24" />
+          <button type="button" onclick="agregarConsumible()" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Agregar</button>
+        </div>
+      </div>
+      <!-- Boleta de consumibles -->
+      <div class="mt-4">
+        <h3 class="font-semibold mb-2">Boleta</h3>
+        <div class="max-h-[500px] overflow-y-auto rounded-lg shadow mb-8">
+        <table class="min-w-full bg-white">
+          <thead class="bg-blue-700 text-white sticky top-0 z-10">
+            <tr>
+              <th class="px-2 py-1">Consumible</th>
+              <th class="px-2 py-1">Cantidad</th>
+              <th class="px-2 py-1">Precio Unitario</th>
+              <th class="px-2 py-1">Subtotal</th>
+              <th class="px-2 py-1"></th>
+            </tr>
+          </thead>
+          <tbody id="boleta-body">
+            <!-- Aquí se agregan los consumibles con JS -->
+          </tbody>
+        </table>
+        </div>
+      </div>
+      {% endif %}
     </div>
       <!-- Contenedor Notificaciones -->
     <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-y-3">
@@ -240,4 +294,66 @@
         </div>
       </div>
     </div>
+
+<script>
+let boleta = [];
+
+function agregarConsumible() {
+  const select = document.getElementById('select-consumible');
+  const cantidad = parseInt(document.getElementById('cantidad-consumible').value);
+  const id = select.value;
+  const nombre = select.options[select.selectedIndex].text;
+  const precio = parseFloat(select.options[select.selectedIndex].dataset.precio);
+
+  if (!id || isNaN(cantidad) || cantidad < 1) return;
+
+  const existente = boleta.find(item => item.id === id);
+  if (existente) {
+    existente.cantidad += cantidad;
+  } else {
+    boleta.push({ id, nombre, precio, cantidad });
+  }
+  renderBoleta();
+  actualizarTotales();
+  document.getElementById('cantidad-consumible').value = 1;
+}
+
+function eliminarConsumible(idx) {
+  boleta.splice(idx, 1);
+  renderBoleta();
+  actualizarTotales();
+}
+
+function renderBoleta() {
+  const tbody = document.getElementById('boleta-body');
+  tbody.innerHTML = '';
+  boleta.forEach((item, idx) => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="px-2 py-1 text-center align-middle">${item.nombre}</td>
+        <td class="px-2 py-1 text-center align-middle">${item.cantidad}</td>
+        <td class="px-2 py-1 text-center align-middle">$${item.precio.toFixed(0)}</td>
+        <td class="px-2 py-1 text-center align-middle">$${(item.precio * item.cantidad).toFixed(0)}</td>
+        <td class="px-2 py-1 text-center align-middle">
+          <button type="button" onclick="eliminarConsumible(${idx})"
+            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded">
+            Eliminar
+          </button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function actualizarTotales() {
+  const cantidadTotal = boleta.reduce((sum, item) => sum + item.cantidad, 0);
+  const montoTotal = boleta.reduce((sum, item) => sum + item.cantidad * item.precio, 0);
+  document.querySelector('input[name="cantidad_productos"]').value = cantidadTotal;
+  document.querySelector('input[name="monto_total"]').value = montoTotal;
+}
+
+document.querySelector('form[action="/ventas/create"]').addEventListener('submit', function(e) {
+  document.getElementById('boleta-json').value = JSON.stringify(boleta);
+});
+</script>
 {% endblock %}

@@ -28,10 +28,10 @@ def main():
     graficar_uso_ingredientes(año)
     print("> (Lineas) Uso de ingredientes generado con éxito")
 
-    ventas_realizadas_mesero_por_año(año)
+    grafico_porcentaje_ventas_realizadas_meseros(año)
     print("> (Torta) Ventas realizadas por mesero generado con éxito")
 
-    total_ventas_mesero_por_año(año)
+    grafico_porcentaje_total_ventas_meseros(año)
     print("> (Torta) Montos totales de las ventas realizadas por los meseros generado con éxito")
 
 
