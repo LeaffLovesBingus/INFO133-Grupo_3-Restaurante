@@ -10,6 +10,21 @@
       function showBody() { document.body.style.opacity = 1; }
       setTimeout(showBody, 500); // Fallback por si Tailwind demora en cargar
     </script>
+    <script>
+      setInterval(function() {
+          fetch('/etl_status')
+            .then(response => response.json())
+            .then(data => {
+              if (data.last_run) {
+                // Compara con el valor guardado en localStorage
+                if (localStorage.getItem('etl_last_notified') !== data.last_run) {
+                  localStorage.setItem('etl_last_notified', data.last_run);
+                  showTime('alerta');
+                }
+              }
+            });
+      }, 5000); // consulta cada 5 segundos
+    </script>
     <script src="https://cdn.tailwindcss.com" onload="showBody()"></script>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -24,6 +39,53 @@
 {% endblock %}
 
 {% block content %}{% endblock %}
+    <div class="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-y-3">
+        <!-- Notificación Alerta -->
+        <div id="alertacard" class="hidden relative transition ease-in-out delay-50 hover:-translate-y-1 hover:scale-110 duration-300">
+
+          <!-- Barra Progreso -->
+          <div id="alertabar" class="absolute top-0 left-0 w-full h-1 bg-orange-500 rounded-sm"></div>
+
+
+          <!-- Icono -->
+
+          <div class="absolute top-2 left-3 bg-orange-50 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-11 stroke-orange-500">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+            </svg>
+          </div>
+
+          <!-- Contenido -->
+          <div class="h-28 w-96 bg-orange-100 rounded-md flex items-center overflow-hidden">
+
+            <!-- Burbujas -->
+            <div class="relative h-full w-20">
+              <div class="absolute size-24 -bottom-6 -left-12 rounded-full bg-orange-200"></div>
+              <div class="absolute size-16 -bottom-6 left-1 rounded-full bg-orange-300/60"></div>
+              <div class="absolute size-3 bottom-10 left-1 rounded-full bg-orange-300/80"></div>
+            </div>
+
+            <!-- Texto -->
+
+            <div>
+
+              <div class="flex items-center justify-between mb-1 ml-4">
+                <h2 class="text-xl font-semibold">Alerta</h2>
+                <button onClick="esconder('alerta')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6 stroke-orange-500 cursor-pointer mr-2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <p class="ml-4 mr-1">Transferencia de datos finalizada.</p>
+            </div>
+          </div>
+
+        </div>
+    </div>
 
 </body>
 <script src="{{ url_for('static', filename='js/notificacion.js') }}"></script>

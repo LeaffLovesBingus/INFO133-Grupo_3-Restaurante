@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 from datetime import datetime
 from math import ceil
 import psycopg2
@@ -7,11 +7,11 @@ from ventas import create as create_ventas, update as update_ventas, delete as d
 from ingredientes import create as create_ingredientes, update as update_ingredientes, delete as delete_ingredientes
 from carga_datos import carga_datos_bp
 from cargar_analisis import mostrar_graficos, graficos_static
-import threading
 import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'ETL')))
 import scheduler
+import threading
 
 app = Flask(__name__)
 
@@ -290,6 +290,15 @@ def limpiar_tablas():
         return redirect(url_for('index'))
     except Exception as e:
         return f"Error al limpiar tablas: {e}"
+    
+@app.route("/etl_status")
+def etl_status():
+    try:
+        with open("/tmp/etl_last_run.txt") as f:
+            last_run = f.read()
+        return jsonify({"last_run": last_run})
+    except Exception:
+        return jsonify({"last_run": None})
 
 # Reservas
 @app.route('/reserva/create', methods=['POST'])
@@ -382,6 +391,9 @@ def nombre_mes(numero):
     return nombres[int(numero)]
 
 if __name__ == "__main__":
-    scheduler_thread = threading.Thread(target=scheduler.scheduler, daemon=True)
-    scheduler_thread.start()
-    app.run(host="0.0.0.0", port=8000, debug=True)
+    # Solo inicia el scheduler si NO es el proceso de recarga de Flask
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true" or not app.debug:
+        scheduler_thread = threading.Thread(target=scheduler.scheduler, daemon=True)
+        scheduler_thread.start()
+
+    app.run(debug=True)
