@@ -1,0 +1,25 @@
+{
+    "tr_mesero": "SELECT e.* FROM \"Empleados\" e JOIN \"Mesero\" m ON e.\"Id_empleado\" = m.\"Id_mesero\"",
+    "est_mesero": "INSERT INTO \"Mesero\"  (\"Id_mesero\", \"Nombre\", \"Apellido\", \"Correo\", \"Sueldo\") VALUES %s",
+
+    "tr_cocinero": "SELECT e.* FROM \"Empleados\" e JOIN \"Cocinero\" c ON e.\"Id_empleado\" = c.\"Id_cocinero\"",
+    "est_cocinero": "INSERT INTO \"Cocinero\" (\"Id_cocinero\", \"Nombre\", \"Apellido\", \"Correo\", \"Sueldo\") VALUES %s",
+
+    "tr_consumibles": "SELECT * FROM \"Consumibles\"",
+    "est_consumibles": "INSERT INTO \"Consumibles\" (\"Id_consumibles\", \"Nombre\", \"Precio_unidad\", \"Categoria\") VALUES %s",
+
+    "tr_mediopago": "SELECT * FROM \"Medio_Pago\"",
+    "est_mediopago": "INSERT INTO \"Medio_Pago\" (\"Id_Medio_Pago\", \"Medio_Pago\") VALUES %s",
+
+    "tr_ingredientes": "SELECT * FROM \"Ingredientes\"",
+    "est_ingredientes": "INSERT INTO \"Ingredientes\" (\"Id_ingrediente\", \"Nombre\", \"Tipo\", \"Cantidad\") VALUES %s",
+
+    "tr_ventas": "SELECT v.\"Id_Venta\", v.\"Cantidad_Productos\", m.\"Capacidad\", v.\"Monto_Total\", v.\"Fecha_Venta\", v.\"FK_Id_Mesero\", v.\"FK_Id_Mesa\", v.\"FK_Id_Medio_Pago\" FROM \"Ventas\" v JOIN \"Mesas\" m ON v.\"FK_Id_Mesa\" = m.\"Id_Mesa\"",
+    "est_ventas": "INSERT INTO \"Hechos_Ventas\" (\"Id_Venta\", \"Cantidad_Productos\", \"Cantidad_clientes\", \"Monto_Total\", \"Fecha_Venta\", \"FK_Id_Mesero\", \"Id_Mesa\", \"FK_Id_Medio_Pago\") VALUES %s",
+
+    "tr_consumiblesvendidos": "SELECT * FROM \"Consumibles_Vendidos\"",
+    "est_consumiblesvendidos": "INSERT INTO \"Consumibles_Vendidos\" (\"FK_Id_Venta\", \"FK_Id_Consumible\", \"Cantidad\") VALUES %s",
+
+    "tr_ingredientesusados": "SELECT * FROM \"Ingredientes_Usados\"",
+    "est_ingredientesusados": "INSERT INTO \"Hechos_Ingredientes_Usados\" (\"Id_Ingredientes_Usados\", \"FK_Id_consumible\", \"FK_Id_ingrediente\", \"Cantidad\", \"Fecha_uso\", \"FK_Id_cocinero\") VALUES %s"
+}
